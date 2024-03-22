@@ -1,6 +1,9 @@
 import {initJsPsych} from 'jspsych';
 import 'jspsych/css/jspsych.css';
+import preload from '@jspsych/plugin-preload';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
+import imageButtonResponse from '@jspsych/plugin-image-button-response';
+
 // start up the thing and make it scream at you when done
 const jsPsych = initJsPsych({
   on_finish: function() {
@@ -8,6 +11,14 @@ const jsPsych = initJsPsych({
   }
 });
 const timeline = [];
+
+
+const loader = {
+type: JsPsychPreload,
+auto_preload: true,
+show_progress_bar: true,
+error_message: 'The experiment failed to load. Please refresh the page and try again!'}
+
 const welcome = {
   type: htmlKeyboardResponse,
   stimulus: "Welcome to the experiment. Your are not ellowed to hit anay key to contin(u)e?!"
@@ -34,28 +45,16 @@ const instructions = {
   post_trial_gap: 2000
 };
 
-// below two go away forever unused and unloved - bye bye!
-const blue_trial = {
-  type: jsPsychImageKeyboardResponse,
-  stimulus: 'img/blue.jpg',
-  choices: ['f', 'j']
-};
 
-const orange_trial = {
-  type: jsPsychImageKeyboardResponse,
-  stimulus: 'img/yellow.jpg',
-  choices: ['f', 'j']
-};
-
-// uncomment it if you want it - we only use bespoke custom images at build time here - no downloading from "unpkg" which is more like donepackage uptop boyz
+// uncomment it if you want it - we only use bespoke custom images at build time here
 // const preload = {
   // type: jsPsychPreload,
   // images: ['img/blue.jpg', 'img/orange.jpg']
 // };
 
-var test_stimuli = [
-  { stimulus: "img/blue.jpg", correct_response: 'f'},
-  { stimulus: "img/yellow.jpg", correct_response: 'j'}
+var image_list = [
+  { stimulus: "img/blue.jpg"},
+  { stimulus: "img/yellow.jpg"}
 ]
 
 const fixation = {
@@ -82,11 +81,10 @@ var debrief_block = {
 
     return `<p>You responded correctly on ${accuracy}% of the trials.</p>
       <p>Your average response time was ${rt}ms.</p>
-      <p>Press any key to complete the experiment. No thank you!!!!!</p>`;
+      <p>Press any key to complete the experiment.</p>`;
 
   }
 };
-
 
 var test = {
   type: jsPsychImageKeyboardResponse,
@@ -103,7 +101,6 @@ var test_procedure = {
   timeline_variables: test_stimuli
 }
 
-// repetitions = more = better = bigger = faster = stronger = harder = better = faster = stronger = daft = punk = psycho = groupie = cocaine = crazy = makes = you = high = makes = you = high
 var test_procedure = {
   timeline: [fixation, test],
   timeline_variables: test_stimuli,
@@ -112,7 +109,6 @@ var test_procedure = {
 };
 
 
-// time is a flat circle
 // timeline.push(preload); lel we ain't doin that part b, BETTER images are in the folder already
 
 
@@ -120,4 +116,4 @@ timeline.push(welcome);
 timeline.push(instructions);
 timeline.push(test_procedure);
 timeline.push(debrief_block);
-jsPsych.run(timeline)
+jsPsych.run(loader, timeline)
