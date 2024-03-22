@@ -2,14 +2,16 @@ import {initJsPsych} from 'jspsych';
 import 'jspsych/css/jspsych.css';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 
+
+
 // start up the thing and make it scream at you when done
 const jsPsych = initJsPsych({
   on_finish: function() {
-    jsPsych.data.displayData();
     jsPsych.data.get().localSave('csv','results.csv');
   }
 });
 
+const subject_id = "Test"
 
 const timeline = [];
 
@@ -80,11 +82,16 @@ var debrief_block = {
     var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
     var rt = Math.round(correct_trials.select('rt').mean());
 
+
     return `<p>You responded correctly on ${accuracy}% of the trials.</p>
       <p>Your average response time was ${rt}ms.</p>
       <p>Press any key to complete the experiment.</p>`;
 
-  }
+      
+  },
+  on_start: function (){
+    jsPsych.data.get().localSave('json', `219_2024_behavioral_${subject_id}.json`);
+  },
 };
 
 var test = {
@@ -110,11 +117,9 @@ var test_procedure = {
 };
 
 
-// timeline.push(preload); lel we ain't doin that part b, BETTER images are in the folder already
-
-
+timeline.push(loader);
 timeline.push(welcome);
 timeline.push(instructions);
 timeline.push(test_procedure);
 timeline.push(debrief_block);
-jsPsych.run(loader, timeline)
+jsPsych.run(timeline)

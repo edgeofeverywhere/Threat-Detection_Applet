@@ -23,14 +23,13 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: [
-            ["@babel/env", {
-              "targets": {
-                "targets": "99.5$"
-              }
-            }]
+            ["@babel/preset-env", {
+            "useBuiltIns": "entry",
+            "corejs": "3.22"
+          }]
           ]
+          },
         },
-      },
       {
         test: /\.css$/, // Add this rule for CSS files
         use: ['style-loader', 'css-loader'] // Use style-loader and css-loader
