@@ -1,15 +1,16 @@
 import {initJsPsych} from 'jspsych';
 import 'jspsych/css/jspsych.css';
-import preload from '@jspsych/plugin-preload';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
-import imageButtonResponse from '@jspsych/plugin-image-button-response';
 
 // start up the thing and make it scream at you when done
 const jsPsych = initJsPsych({
   on_finish: function() {
     jsPsych.data.displayData();
+    jsPsych.data.get().localSave('csv','results.csv');
   }
 });
+
+
 const timeline = [];
 
 
@@ -21,7 +22,7 @@ error_message: 'The experiment failed to load. Please refresh the page and try a
 
 const welcome = {
   type: htmlKeyboardResponse,
-  stimulus: "Welcome to the experiment. Your are not ellowed to hit anay key to contin(u)e?!"
+  stimulus: "Welcome to the experiment. Press any key to contin(u)e?!"
 };
 
 const instructions = {
