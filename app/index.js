@@ -61,7 +61,7 @@ function imageDataUrl(image) {
   }
   context.putImageData(imageData, 0, 0);
 
-  // return embedded workflow base64s
+  // return embedded
   return canvas.toDataURL('image/png');
 }
 
@@ -202,8 +202,7 @@ function getNextTrialType() {
     currentTrialType = nextTrialType;
 }
 
-// choose which types of images to get
-
+// choose which types of images to get based off of the trial type
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
     let imagePaths = [];
@@ -254,15 +253,15 @@ function assembleGridArray(imagePaths) {
     const screenWidth = window.innerWidth;
     const screenHeight = window.innerHeight;
     const gridSize = Math.min(screenWidth, screenHeight);
-    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`)
+    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only!
 
-    // Set grid size
+    // set grid size
     gridContainer.style.width = `${gridSize}px`;
     gridContainer.style.height = `${gridSize}px`;
 
-    // Add grid items to the grid container using the provided imagePaths
+    // add grid items to the grid container using the provided imagePaths, ideally
     imagePaths.forEach((imageURL, position) => {
-        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1
+        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
     });
 }
 
@@ -284,7 +283,7 @@ const instructions = {
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_start: function() {
-        // Call assembleGridImageLocations to get imagePaths and target_location
+        // call assembleGridImageLocations to get imagePaths and target_location - we 
         const { imagePaths } = assembleGridImageLocations(currentTrialType);
     },
     on_trial_start: function(){
@@ -302,16 +301,18 @@ const experimental_grid = {
         target_location: target_location
     },
     post_trial_gap: 250
+    // also add an on_finish property with a function that appends the "correct" response for a given a trial type to the .data object!!
 };
 
-
+// below is not a fixation or anything - we will rename this 
+// when the css implementation is finished and have an actual fixation cross
 const fixation = {
     type: JsPsychImageKeyboardResponse,
     stimulus: '',
     choices: ['q', 'p', 'space'],
     data: {
         task: 'response',
-        correct_response: 'p' // Assuming this is the correct response
+        correct_response: 'p' // vestigial - this does not apply here
     },
     on_start: function(trial) {
         getNextTrialType();
@@ -320,7 +321,7 @@ const fixation = {
         trial.stimulus = imageUrl;
     },
     on_finish: function(data) {
-        data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response);
+        data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
     }
 };
 
