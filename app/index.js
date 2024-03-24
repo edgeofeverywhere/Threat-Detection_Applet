@@ -294,7 +294,7 @@ const experimental_grid = {
     stimulus: `
     <div id="grid-container">
     <!-- Grid items will be dynamically added here -->
-</div>    `,    
+</div>    `,    // I defined this twice since neither on the stimulus or on the HTML did document.getElementID work properly.
     data: {
         task: currentTrialType,
         reaction_time: 'rt',
@@ -316,6 +316,7 @@ const fixation = {
     },
     on_start: function(trial) {
         getNextTrialType();
+        console.log(`upcoming trial is ${currentTrialType}`); // debug only
         const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
         const imageUrl = imageDataUrl(noisyGreyscaleImage);
         trial.stimulus = imageUrl;
