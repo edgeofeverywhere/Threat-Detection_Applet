@@ -191,7 +191,7 @@ arrayNums: [25, 25, 25, 25, 5, 5]
 }
 
 const experimental_trajectory = jsPsych.randomization.repeat(trialTypeDefs.arrayNames, trialTypeDefs.arrayNums);
-console.log(experimental_trajectory) //delete after testing
+console.log(experimental_trajectory) // delete after testing
 
 let ticker = 0;
 let currentTrialType = experimental_trajectory[ticker];
