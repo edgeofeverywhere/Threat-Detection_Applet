@@ -7,6 +7,8 @@ import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
+const imageLocations = [];
+
 // initialize first:
 const jsPsych = initJsPsych({
     on_finish: function() {
@@ -205,7 +207,7 @@ function getNextTrialType() {
 // choose which types of images to get based off of the trial type
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
-    let imagePaths = [];
+    const imageLocations = [];
 
     // switchie
     switch (currentTrialType) {
@@ -214,16 +216,16 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-            imagePaths = generateImagePaths(currentTrialType);
+            let imageLocations = generateImagePaths(currentTrialType);
 
             // manipulate the array according to the randomized target location
-            const targetImage = imagePaths.shift();
-            imagePaths.splice(target_location - 1, 0, targetImage); // inject the target object back into array
+            const targetImage = imageLocations.shift();
+            imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
             break;
 
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-            imagePaths = generateImagePaths(currentTrialType);
+            imageLocations = generateImagePaths(currentTrialType);
             break;
 
         default:
@@ -231,20 +233,20 @@ function assembleGridImageLocations(currentTrialType) {
             break;
     }
 
-    return { imagePaths, target_location };
+    return { imageLocations, target_location };
 }
 
-function addGridItem(imageURL, position) {
+function addGridItem() {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
-    gridItem.style.backgroundImage = `url(${imageURL})`;
+    gridItem.style.backgroundImage = `url(${imageLocations})`;
     gridItem.innerText = position; // debug only
     gridContainer.appendChild(gridItem);
-    console.log(`added grid item ${imageURL}`); // debug only
+    console.log(`added grid item ${imageLocations}`); // debug only
 }
 
-function assembleGridArray(imagePaths) {
+function assembleGridArray() {
     // clear old grid items
     const gridContainer = document.getElementById('grid-container');
     gridContainer.innerHTML = '';
@@ -260,10 +262,9 @@ function assembleGridArray(imagePaths) {
     gridContainer.style.height = `${gridSize}px`;
 
     // add grid items to the grid container using the provided imagePaths, ideally
-    imagePaths.forEach((imageURL, position) => {
-        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
-    });
-}
+    gridContainer.forEach(imageLocations);
+        addGridItem(imageLocations); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
+    };
 
 // !EXPERIMENT TIMELINE BELOW!
 
@@ -284,7 +285,7 @@ const experimental_grid = {
     type: htmlKeyboardResponse,
     on_start: function() {
         // call assembleGridImageLocations to get imagePaths and target_location - we 
-        const { imagePaths } = assembleGridImageLocations(currentTrialType);
+        assembleGridImageLocations(currentTrialType);
     },
     on_trial_start: function(){
         assembleGridArray(imagePaths);
@@ -300,7 +301,7 @@ const experimental_grid = {
         reaction_time: 'rt',
         target_location: target_location
     },
-    post_trial_gap: 250
+    post_trial_gap: 10
     // also add an on_finish property with a function that appends the "correct" response for a given a trial type to the .data object!!
 };
 
