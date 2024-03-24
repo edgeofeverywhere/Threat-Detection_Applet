@@ -236,122 +236,124 @@ function assembleGridImageLocations(currentTrialType) {
 
     return { imageLocations, target_location };
 }
-
-function addGridItem() {
-    const gridContainer = document.getElementById('grid-container');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    gridItem.style.backgroundImage = `url(${imageLocations})`;
-    gridItem.innerText = position; // debug only
-    gridContainer.appendChild(gridItem);
-    console.log(`added grid item ${imageLocations}`); // debug only
-}
-
-function assembleGridArray(imageLocations) {
-    // clear old grid items
-    const gridContainer = document.getElementById('grid-container');
-    console.log(`the contents of gridcontainer are: ${gridContainer}`) // debug 
-
-    // get screen stuff
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const gridSize = Math.min(screenWidth, screenHeight);
-    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only!
-
-    // set grid size
-    gridContainer.style.width = `${gridSize}px`;
-    gridContainer.style.height = `${gridSize}px`;
-
-    // add grid items to the grid container using the provided imagePaths, ideally
-    imageLocations.forEach((imageLocation, index) => {
-        addGridItem(imageLocation, index + 1); // Adding 1 to index to start position from 1
-    });
-}
-
-
-// !EXPERIMENT TIMELINE BELOW!
-
-const timeline = [];
-
-const instructions = {
-    type: htmlKeyboardResponse,
-    stimulus: `
-        <p>ignore this text it's not signifying anything rn since we are still building.
-        </p>
-        <div style='width: 100px;'>
-        </div>
-    `,
-    post_trial_gap: 2000
-};
-
-const experimental_grid = {
-    type: htmlKeyboardResponse,
-    on_start: function() {
-        assembleGridImageLocations(currentTrialType);
-        assembleGridArray(imageLocations);
-    },
-    choices: ['q', 'p', 'space'],
-    stimulus: `
-    <div id="grid-container">
-    <!-- Grid items will be dynamically added here -->
-</div>    `,    // I defined this twice since neither on the stimulus or on the HTML did document.getElementID work properly.
-    data: {
-        task: currentTrialType,
-        reaction_time: 'rt',
-        target_location: target_location
-    },
-    post_trial_gap: 10
-    // also add an on_finish property with a function that appends the "correct" response for a given a trial type to the .data object!!
-};
-
-// below is not a fixation or anything - we will rename this 
-// when the css implementation is finished and have an actual fixation cross
-const fixation = {
-    type: JsPsychImageKeyboardResponse,
-    stimulus: '',
-    choices: ['q', 'p', 'space'],
-    data: {
-        task: 'response',
-        correct_response: 'p' // vestigial - this does not apply here
-    },
-    on_start: function(trial) {
-        getNextTrialType();
-        console.log(`upcoming trial is ${currentTrialType}`); // debug only
-        const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-        const imageUrl = imageDataUrl(noisyGreyscaleImage);
-        trial.stimulus = imageUrl;
-    },
-    on_finish: function(data) {
-        data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
+document.addEventListener('DOMContentLoaded', function() {
+    const imageLocations = []
+    function addGridItem(imageLocations) {
+        const gridContainer = document.getElementById('grid-container');
+        const gridItem = document.createElement('div');
+        gridItem.classList.add('grid-item');
+        gridItem.style.backgroundImage = `url(${imageLocations})`;
+        gridItem.innerText = position; // debug only
+        gridContainer.appendChild(gridItem);
+        console.log(`added grid item ${imageLocations}`); // debug only
     }
-};
+
+    function assembleGridArray(imageLocations) {
+        // clear old grid items
+        const gridContainer = document.getElementById('grid-container');
+        console.log(`the contents of gridcontainer are: ${gridContainer}`) // debug only
+
+        // get screen stuff
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const gridSize = Math.min(screenWidth, screenHeight);
+        console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only
+
+        // set grid size
+        gridContainer.style.width = `${gridSize}px`;
+        gridContainer.style.height = `${gridSize}px`;
+
+        // add grid items to the grid container using the provided imagePaths, ideally
+        imageLocations.forEach((imageLocation, index) => {
+            addGridItem(imageLocation, index + 1); // Adding 1 to index to start position from 1
+        });
+    }
 
 
-const debrief_block = {
-    type: htmlKeyboardResponse,
-    on_start: function () {
-        jsPsych.data.get().localSave('csv', `results.csv`);
-    },
-    stimulus: function() {
-        var trials = jsPsych.data.get().filter({task: 'response'});
-        var correct_trials = trials.filter({correct: true});
-        var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-        var rt = Math.round(correct_trials.select('rt').mean());
+    // !EXPERIMENT TIMELINE BELOW!
 
-        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
-            <p>Your average response time was ${rt}ms.</p>
-            <p>Press any key to complete the experiment.</p>`;
-    },
-};
+    const timeline = [];
 
-const test_procedure = {
-    timeline: [fixation, experimental_grid],
-    randomize_order: true,
-    repetitions: 15
-};
+    const instructions = {
+        type: htmlKeyboardResponse,
+        stimulus: `
+            <p>ignore this text it's not signifying anything rn since we are still building.
+            </p>
+            <div style='width: 100px;'>
+            </div>
+        `,
+        post_trial_gap: 2000
+    };
 
-timeline.push(instructions);
-timeline.push(test_procedure);
-timeline.push(debrief_block);
+    const experimental_grid = {
+        type: htmlKeyboardResponse,
+        on_start: function() {
+            assembleGridImageLocations(currentTrialType);
+            assembleGridArray(imageLocations);
+        },
+        choices: ['q', 'p', 'space'],
+        stimulus: `
+        <div id="grid-container">
+        <!-- Grid items will be dynamically added here -->
+    </div>    `,    // I defined this twice since neither on the stimulus or on the HTML did document.getElementID work properly.
+        data: {
+            task: currentTrialType,
+            reaction_time: 'rt',
+            target_location: target_location
+        },
+        post_trial_gap: 10
+        // also add an on_finish property with a function that appends the "correct" response for a given a trial type to the .data object!!
+    };
 
-jsPsych.run(timeline);
+    // below is not a fixation or anything - we will rename this 
+    // when the css implementation is finished and have an actual fixation cross
+    const fixation = {
+        type: JsPsychImageKeyboardResponse,
+        stimulus: '',
+        choices: ['q', 'p', 'space'],
+        data: {
+            task: 'response',
+            correct_response: 'p' // vestigial - this does not apply here
+        },
+        on_start: function(trial) {
+            getNextTrialType();
+            console.log(`upcoming trial is ${currentTrialType}`); // debug only
+            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
+            const imageUrl = imageDataUrl(noisyGreyscaleImage);
+            trial.stimulus = imageUrl;
+        },
+        on_finish: function(data) {
+            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
+        }
+    };
+
+
+    const debrief_block = {
+        type: htmlKeyboardResponse,
+        on_start: function () {
+            jsPsych.data.get().localSave('csv', `results.csv`);
+        },
+        stimulus: function() {
+            var trials = jsPsych.data.get().filter({task: 'response'});
+            var correct_trials = trials.filter({correct: true});
+            var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+            var rt = Math.round(correct_trials.select('rt').mean());
+
+            return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+                <p>Your average response time was ${rt}ms.</p>
+                <p>Press any key to complete the experiment.</p>`;
+        },
+    };
+
+    const test_procedure = {
+        timeline: [fixation, experimental_grid],
+        randomize_order: true,
+        repetitions: 15
+    };
+
+    timeline.push(instructions);
+    timeline.push(test_procedure);
+    timeline.push(debrief_block);
+
+    jsPsych.run(timeline);
+    });
