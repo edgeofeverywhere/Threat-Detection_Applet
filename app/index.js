@@ -72,8 +72,6 @@ const width = 338;
 const height = 254;
 
 function generateImagePaths(currentTrialType) {
-    // Clear extant image paths array
-    const imagePaths = [];
     
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);
@@ -120,39 +118,39 @@ function generateImagePaths(currentTrialType) {
     // switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
-            imagePaths.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();        
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Ontogenetic_Distractor_Nonthreat_target':
-            imagePaths.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_Nonthreat_target':
-            imagePaths.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_Threat_target':
-            imagePaths.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
@@ -160,7 +158,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
@@ -168,7 +166,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         default:
@@ -176,7 +174,7 @@ function generateImagePaths(currentTrialType) {
             break;
     }
 
-    return imagePaths;
+    return imageLocations;
 }
 
 const target_location = 0
@@ -207,7 +205,6 @@ function getNextTrialType() {
 // choose which types of images to get based off of the trial type
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
-    const imageLocations = [];
 
     // switchie
     switch (currentTrialType) {
@@ -251,7 +248,6 @@ function addGridItem() {
 function assembleGridArray() {
     // clear old grid items
     const gridContainer = document.getElementById('grid-container');
-    gridContainer.innerHTML = '';
 
     // get screen stuff
     const screenWidth = window.innerWidth;
@@ -265,7 +261,7 @@ function assembleGridArray() {
 
     // add grid items to the grid container using the provided imagePaths, ideally
     gridContainer.forEach(imageLocations);
-        addGridItem(imageLocations); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
+        addGridItem(imageLocations); 
     };
 
 // !EXPERIMENT TIMELINE BELOW!
@@ -286,9 +282,8 @@ const instructions = {
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_start: function() {
-        let imagePaths = [];
-        imagePaths = assembleGridImageLocations(currentTrialType);
-        assembleGridArray(imagePaths);
+        assembleGridImageLocations(currentTrialType);
+        assembleGridArray(imageLocations);
     },
     choices: ['q', 'p', 'space'],
     stimulus: `
