@@ -247,9 +247,10 @@ function addGridItem() {
     console.log(`added grid item ${imageLocations}`); // debug only
 }
 
-function assembleGridArray() {
+function assembleGridArray(imageLocations) {
     // clear old grid items
     const gridContainer = document.getElementById('grid-container');
+    console.log(`the contents of gridcontainer are: ${gridContainer}`) // debug 
 
     // get screen stuff
     const screenWidth = window.innerWidth;
@@ -262,9 +263,11 @@ function assembleGridArray() {
     gridContainer.style.height = `${gridSize}px`;
 
     // add grid items to the grid container using the provided imagePaths, ideally
-    gridContainer.forEach(imageLocations);
-        addGridItem(imageLocations); 
-    };
+    imageLocations.forEach((imageLocation, index) => {
+        addGridItem(imageLocation, index + 1); // Adding 1 to index to start position from 1
+    });
+}
+
 
 // !EXPERIMENT TIMELINE BELOW!
 
@@ -288,7 +291,10 @@ const experimental_grid = {
         assembleGridArray(imageLocations);
     },
     choices: ['q', 'p', 'space'],
-    stimulus: `nothing`,
+    stimulus: `
+    <div id="grid-container">
+    <!-- Grid items will be dynamically added here -->
+</div>    `,    
     data: {
         task: currentTrialType,
         reaction_time: 'rt',
