@@ -7,14 +7,11 @@ import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
-// initialize first:
-const jsPsych = initJsPsych({
-    on_finish: function() {
-        jsPsych.data.get().localSave('csv', 'results.csv');
-    }
-});
+// these are overridden - just go-with-it-for-now
+let imagePaths = ['/img/Guns_White_Normal/Phone1.bmp', '/img/Guns_White_Normal/Phone2.bmp', '/img/Guns_White_Normal/Phone3.bmp', '/img/Guns_White_Normal/Phone4.bmp', '/img/Guns_White_Normal/Phone5.bmp', '/img/Guns_White_Normal/Phone6.bmp', '/img/Guns_White_Normal/Phone7.bmp', '/img/Guns_White_Normal/Phone8.bmp', '/img/Guns_White_Normal/Phone9.bmp']
+const gridContainer = []
 
-// !HELPERS BELOW!
+
 function generateNoisyGreyscaleImage(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
 
@@ -36,6 +33,8 @@ function generateNoisyGreyscaleImage(width, height) {
 
     return image;
 }
+
+
 
 function imageDataUrl(image) {
   const width = image[0].length;
@@ -68,6 +67,44 @@ function imageDataUrl(image) {
 // set this to the size of the mask as on the participants' screen - use same css
 const width = 338;
 const height = 254;
+
+function addGridItem(imageURL, position) {
+    const gridContainer = document.getElementById('gridContainer');
+    const gridItem = document.createElement('div');
+    gridItem.classList.add('grid-item');
+    gridItem.style.backgroundImage = `url(${imageURL})`;
+    gridItem.innerText = position; // debug only
+    gridContainer.appendChild(gridItem);
+    console.log(`added grid item ${imageURL}`); // debug only
+}
+
+function assembleGridArray(imagePaths) {
+    // clear old grid items
+    const gridContainer = document.getElementById('gridContainer');
+    gridContainer.innerHTML = '';
+
+    // get screen stuff
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const gridSize = Math.min(screenWidth, screenHeight);
+    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only!
+
+    // set grid size
+    gridContainer.style.width = `${gridSize}px`;
+    gridContainer.style.height = `${gridSize}px`;
+
+    // add grid items to the grid container using the provided imagePaths, ideally
+    imagePaths.forEach((imageURL, position) => {
+        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
+    })};
+
+// initialize here:
+const jsPsych = initJsPsych({
+    on_trial_start: function(){assembleGridArray(imagePaths)},
+    on_finish: function() {
+        jsPsych.data.get().localSave('csv', 'results.csv');
+    }
+});
 
 function generateImagePaths(currentTrialType) {
     // Clear extant image paths array
@@ -234,36 +271,6 @@ function assembleGridImageLocations(currentTrialType) {
     return { imagePaths, target_location };
 }
 
-function addGridItem(imageURL, position) {
-    const gridContainer = document.getElementById('grid-container');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    gridItem.style.backgroundImage = `url(${imageURL})`;
-    gridItem.innerText = position; // debug only
-    gridContainer.appendChild(gridItem);
-    console.log(`added grid item ${imageURL}`); // debug only
-}
-
-function assembleGridArray(imagePaths) {
-    // clear old grid items
-    const gridContainer = document.getElementById('grid-container');
-    gridContainer.innerHTML = '';
-
-    // get screen stuff
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const gridSize = Math.min(screenWidth, screenHeight);
-    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only!
-
-    // set grid size
-    gridContainer.style.width = `${gridSize}px`;
-    gridContainer.style.height = `${gridSize}px`;
-
-    // add grid items to the grid container using the provided imagePaths, ideally
-    imagePaths.forEach((imageURL, position) => {
-        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
-    });
-}
 
 // !EXPERIMENT TIMELINE BELOW!
 
@@ -272,6 +279,7 @@ const timeline = [];
 const instructions = {
     type: htmlKeyboardResponse,
     stimulus: `
+
         <p>ignore this text it's not signifying anything rn since we are still building.
         </p>
         <div style='width: 100px;'>
@@ -285,9 +293,6 @@ const experimental_grid = {
     on_start: function() {
         // call assembleGridImageLocations to get imagePaths and target_location - we 
         const { imagePaths } = assembleGridImageLocations(currentTrialType);
-    },
-    on_trial_start: function(){
-        assembleGridArray(imagePaths);
     },
     choices: ['q', 'p', 'space'],
     stimulus: `
