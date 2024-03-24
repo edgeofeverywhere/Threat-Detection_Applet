@@ -155,6 +155,7 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Ontogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
+                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -163,6 +164,7 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Phylogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
+                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -286,12 +288,7 @@ const experimental_grid = {
         assembleGridArray(imageLocations);
     },
     choices: ['q', 'p', 'space'],
-    stimulus: `
-    <div class="grid-container" id="grid-container">
-        <!-- Grid items will be dynamically added here -->
-        ''
-    </div>
-    `,
+    stimulus: `nothing`,
     data: {
         task: currentTrialType,
         reaction_time: 'rt',
