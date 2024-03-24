@@ -249,7 +249,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function assembleGridArray(imageLocations) {
-        // clear old grid items
         const gridContainer = document.getElementById('grid-container');
         console.log(`the contents of gridcontainer are: ${gridContainer}`) // debug only
 
@@ -260,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only
 
         // set grid size
-        gridContainer.style.width = `${gridSize}px`;
+        gridContainer.style.width = `${gridSize}px`; // terminates here usually-- even when in DOM wrapper 
         gridContainer.style.height = `${gridSize}px`;
 
         // add grid items to the grid container using the provided imagePaths, ideally
@@ -288,9 +287,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const experimental_grid = {
         type: htmlKeyboardResponse,
         on_start: function() {
+            document.addEventListener('DOMContentLoaded', function() {
             assembleGridImageLocations(currentTrialType);
             assembleGridArray(imageLocations);
-        },
+        })}, 
         choices: ['q', 'p', 'space'],
         stimulus: `
         <div id="grid-container">
