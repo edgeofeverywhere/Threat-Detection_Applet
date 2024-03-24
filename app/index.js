@@ -7,7 +7,7 @@ import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
-// these are overridden - just go-with-it-for-now
+// these are overridden - everything is out of order because it's a bunch of baloney
 let imagePaths = ['/img/Guns_White_Normal/Phone1.bmp', '/img/Guns_White_Normal/Phone2.bmp', '/img/Guns_White_Normal/Phone3.bmp', '/img/Guns_White_Normal/Phone4.bmp', '/img/Guns_White_Normal/Phone5.bmp', '/img/Guns_White_Normal/Phone6.bmp', '/img/Guns_White_Normal/Phone7.bmp', '/img/Guns_White_Normal/Phone8.bmp', '/img/Guns_White_Normal/Phone9.bmp']
 const gridContainer = []
 
