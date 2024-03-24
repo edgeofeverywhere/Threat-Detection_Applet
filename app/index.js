@@ -221,11 +221,13 @@ function assembleGridImageLocations(currentTrialType) {
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
             imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
+            console.log(`your chosen pics are ${imageLocations}`); // debug only
             break;
 
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
             imageLocations = generateImagePaths(currentTrialType);
+            console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
 
         default:
