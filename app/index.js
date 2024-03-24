@@ -284,16 +284,15 @@ const instructions = {
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_start: function() {
-        // call assembleGridImageLocations to get imagePaths and target_location - we 
-        assembleGridImageLocations(currentTrialType);
-    },
-    on_trial_start: function(){
+        let imagePaths = [];
+        imagePaths = assembleGridImageLocations(currentTrialType);
         assembleGridArray(imagePaths);
     },
     choices: ['q', 'p', 'space'],
     stimulus: `
     <div class="grid-container" id="grid-container">
         <!-- Grid items will be dynamically added here -->
+        ''
     </div>
     `,
     data: {
