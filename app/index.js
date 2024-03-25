@@ -284,9 +284,6 @@ function assembleGridArray(imageLocations) {
     });
 }
 
-
-    
-
     // !EXPERIMENT TIMELINE BELOW!
 
     const timeline = [];
