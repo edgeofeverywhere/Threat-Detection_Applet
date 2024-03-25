@@ -236,11 +236,13 @@ function assembleGridImageLocations(currentTrialType) {
             break;
     }
 }
+
 function addGridItem(imageLocation, position, callback) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
+    gridContainer.style.height = VisualViewport.height;
+    gridContainer.style.width = VisualViewport.width;
     gridItem.classList.add('grid-item');
-
     // Create an image element
     const image = new Image();
     image.onload = function() {

@@ -1,35 +1,21 @@
 /* Default grid styles */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px;
-    justify-content: center;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-content: space-evenly;
     align-items: center;
     margin: auto;
 }
 
 .grid-item {
     /* Set fixed dimensions for each grid item */
-    width: calc(100% / 3); /* Adjusted to fill one-third of the grid container width */
-    height: calc(100% / 3); /* Adjusted to fill one-third of the grid container height */
-    /* Other styles remain the same */
-    background-size: cover;
+    width: auto; /* Adjusted to fill one-third of the grid container width */
+    height: auto; /* Adjusted to fill one-third of the grid container height */
+    background-size: fill;
     background-position: center;
     text-align: center;
     color: white;
-    font-size: 24px;
+    font-size: 10px;
 }
 
-
-/* Media queries for responsive design */
-@media screen and (max-width: 600px) {
-    .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-}
