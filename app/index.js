@@ -72,7 +72,6 @@ const width = 338;
 const height = 254;
 
 function generateImagePaths(currentTrialType) {
-    let imageLocations = []
     
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);

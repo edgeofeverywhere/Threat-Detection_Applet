@@ -1,22 +1,27 @@
 /* Default grid styles */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* Adjusted to evenly distribute the columns */
+    grid-template-rows: repeat(3, 1fr); /* Added to specify three rows */
     grid-gap: 10px;
     justify-content: center;
     align-items: center;
     margin: auto;
+    width: 80%; /* Adjusted to limit the width of the grid container */
+    max-width: 600px; /* Adjust as needed */
+    height: auto; /* Ensures the height adjusts based on content */
 }
 
 .grid-item {
-    width: 100%;
-    height: 100%;
-    background-size: cover;
-    background-position: center;
+    width: 100%; /* Ensure grid items expand to fill the grid */
+    height: 100%; /* Ensure grid items expand to fill the grid */
+    background-size: cover; /* Ensure the background image covers the entire grid item */
+    background-position: center; /* Center the background image within the grid item */
     text-align: center;
     color: white;
     font-size: 24px;
 }
+
 
 /* Media queries for responsive design */
 @media screen and (max-width: 600px) {
