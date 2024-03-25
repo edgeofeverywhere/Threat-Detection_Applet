@@ -7,11 +7,16 @@ import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
-// these are overridden - everything is out of order because it's a bunch of baloney
-let imagePaths = ['/img/Guns_White_Normal/Phone1.bmp', '/img/Guns_White_Normal/Phone2.bmp', '/img/Guns_White_Normal/Phone3.bmp', '/img/Guns_White_Normal/Phone4.bmp', '/img/Guns_White_Normal/Phone5.bmp', '/img/Guns_White_Normal/Phone6.bmp', '/img/Guns_White_Normal/Phone7.bmp', '/img/Guns_White_Normal/Phone8.bmp', '/img/Guns_White_Normal/Phone9.bmp']
-const gridContainer = []
+const imageLocations = [];
 
+// initialize first:
+const jsPsych = initJsPsych({
+    on_finish: function() {
+        jsPsych.data.get().localSave('csv', 'results.csv');
+    }
+});
 
+// !HELPERS BELOW!
 function generateNoisyGreyscaleImage(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
 
@@ -33,8 +38,6 @@ function generateNoisyGreyscaleImage(width, height) {
 
     return image;
 }
-
-
 
 function imageDataUrl(image) {
   const width = image[0].length;
@@ -68,47 +71,8 @@ function imageDataUrl(image) {
 const width = 338;
 const height = 254;
 
-function addGridItem(imageURL, position) {
-    const gridContainer = document.getElementById('gridContainer');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    gridItem.style.backgroundImage = `url(${imageURL})`;
-    gridItem.innerText = position; // debug only
-    gridContainer.appendChild(gridItem);
-    console.log(`added grid item ${imageURL}`); // debug only
-}
-
-function assembleGridArray(imagePaths) {
-    // clear old grid items
-    const gridContainer = document.getElementById('gridContainer');
-    gridContainer.innerHTML = '';
-
-    // get screen stuff
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-    const gridSize = Math.min(screenWidth, screenHeight);
-    console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only!
-
-    // set grid size
-    gridContainer.style.width = `${gridSize}px`;
-    gridContainer.style.height = `${gridSize}px`;
-
-    // add grid items to the grid container using the provided imagePaths, ideally
-    imagePaths.forEach((imageURL, position) => {
-        addGridItem(imageURL, position + 1); // Adding 1 to index to start position from 1 (zero-index to CSS-rules)
-    })};
-
-// initialize here:
-const jsPsych = initJsPsych({
-    on_trial_start: function(){assembleGridArray(imagePaths)},
-    on_finish: function() {
-        jsPsych.data.get().localSave('csv', 'results.csv');
-    }
-});
-
 function generateImagePaths(currentTrialType) {
-    // Clear extant image paths array
-    const imagePaths = [];
+    imageLocations.length = 0
     
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);
@@ -155,55 +119,57 @@ function generateImagePaths(currentTrialType) {
     // switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
-            imagePaths.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();        
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Ontogenetic_Distractor_Nonthreat_target':
-            imagePaths.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_Nonthreat_target':
-            imagePaths.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_Threat_target':
-            imagePaths.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.bmp`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
+                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
+                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imagePaths.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
             }
             break;
         default:
@@ -211,7 +177,7 @@ function generateImagePaths(currentTrialType) {
             break;
     }
 
-    return imagePaths;
+    return imageLocations;
 }
 
 const target_location = 0
@@ -228,7 +194,7 @@ arrayNums: [25, 25, 25, 25, 5, 5]
 }
 
 const experimental_trajectory = jsPsych.randomization.repeat(trialTypeDefs.arrayNames, trialTypeDefs.arrayNums);
-console.log(experimental_trajectory) //delete after testing
+console.log(experimental_trajectory) // delete after testing
 
 let ticker = 0;
 let currentTrialType = experimental_trajectory[ticker];
@@ -240,9 +206,9 @@ function getNextTrialType() {
 }
 
 // choose which types of images to get based off of the trial type
+
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
-    let imagePaths = [];
 
     // switchie
     switch (currentTrialType) {
@@ -251,111 +217,159 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-            imagePaths = generateImagePaths(currentTrialType);
-
+            let imageLocations = generateImagePaths(currentTrialType);
+            
             // manipulate the array according to the randomized target location
-            const targetImage = imagePaths.shift();
-            imagePaths.splice(target_location - 1, 0, targetImage); // inject the target object back into array
+            const targetImage = imageLocations.shift();
+            imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
+            console.log(`your chosen pics are ${imageLocations}`); // debug only
             break;
 
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-            imagePaths = generateImagePaths(currentTrialType);
+            imageLocations = generateImagePaths(currentTrialType);
+            console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
 
         default:
             console.error('Unknown trial type:', currentTrialType); // should never trigger
             break;
     }
+}
+function addGridItem(imageLocation, position, callback) {
+    const gridContainer = document.getElementById('grid-container');
+    const gridItem = document.createElement('div');
+    gridItem.classList.add('grid-item');
 
-    return { imagePaths, target_location };
+    // Create an image element
+    const image = new Image();
+    image.onload = function() {
+        // When the image has loaded, set it as the background image of the grid item
+        gridItem.style.backgroundImage = `url(${imageLocation})`;
+        gridItem.innerText = position; // debug only
+        gridContainer.appendChild(gridItem);
+        console.log(`added grid item ${imageLocation}`); // debug only
+        
+        // Check if this is the last image to load
+        if (callback && position === imageLocations.length) {
+            callback(); // Call the callback function to indicate that all images have been loaded
+        }
+    };
+    // Set the source of the image element to trigger loading
+    image.src = imageLocation;
+}
+
+function assembleGridArray(imageLocations) {
+    const gridContainer = document.getElementById('grid-container');
+    // Clear any existing grid items
+    gridContainer.innerHTML = '';
+    
+    // Define a custom event
+    const gridReadyEvent = new Event('gridReady');
+    
+    // Counter to keep track of loaded images
+    let loadedImagesCount = 0;
+
+    // Loop through each image location
+    imageLocations.forEach((imageLocation, index) => {
+        // Add the grid item with a callback function to be executed when all images are loaded
+        addGridItem(imageLocation, index + 1, function() {
+            loadedImagesCount++;
+            if (loadedImagesCount === imageLocations.length) {
+                console.log('All images have been loaded. Display the grid now.');
+                // Dispatch the custom event when all images are loaded
+                gridContainer.dispatchEvent(gridReadyEvent);
+            }
+        }); 
+    });
 }
 
 
-// !EXPERIMENT TIMELINE BELOW!
+    
 
-const timeline = [];
+    // !EXPERIMENT TIMELINE BELOW!
 
-const instructions = {
-    type: htmlKeyboardResponse,
-    stimulus: `
+    const timeline = [];
 
-        <p>ignore this text it's not signifying anything rn since we are still building.
-        </p>
-        <div style='width: 100px;'>
-        </div>
-    `,
-    post_trial_gap: 2000
-};
+    const instructions = {
+        type: htmlKeyboardResponse,
+        stimulus: `
+            <p>ignore this text it's not signifying anything rn since we are still building.
+            </p>
+            <div style='width: 100px;'>
+            </div>
+        `,
+        post_trial_gap: 2000
+    };
 
-const experimental_grid = {
-    type: htmlKeyboardResponse,
-    on_start: function() {
-        // call assembleGridImageLocations to get imagePaths and target_location - we 
-        const { imagePaths } = assembleGridImageLocations(currentTrialType);
-    },
-    choices: ['q', 'p', 'space'],
-    stimulus: `
-    <div class="grid-container" id="grid-container">
+    const experimental_grid = {
+        type: htmlKeyboardResponse,
+        on_load: function() {
+            assembleGridImageLocations(currentTrialType);
+            assembleGridArray(imageLocations);
+        }, 
+        choices: ['q', 'p', 'space'],
+        stimulus: `
+        <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
-    </div>
-    `,
-    data: {
-        task: currentTrialType,
-        reaction_time: 'rt',
-        target_location: target_location
-    },
-    post_trial_gap: 250
-    // also add an on_finish property with a function that appends the "correct" response for a given a trial type to the .data object!!
-};
+    </div>    `, 
+        data: {
+            task: currentTrialType,
+            reaction_time: 'rt',
+            target_location: target_location
+        },
+        post_trial_gap: 10
+    };
 
-// below is not a fixation or anything - we will rename this 
-// when the css implementation is finished and have an actual fixation cross
-const fixation = {
-    type: JsPsychImageKeyboardResponse,
-    stimulus: '',
-    choices: ['q', 'p', 'space'],
-    data: {
-        task: 'response',
-        correct_response: 'p' // vestigial - this does not apply here
-    },
-    on_start: function(trial) {
-        getNextTrialType();
-        const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-        const imageUrl = imageDataUrl(noisyGreyscaleImage);
-        trial.stimulus = imageUrl;
-    },
-    on_finish: function(data) {
-        data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
-    }
-};
+    // below is not a fixation or anything - we will rename this 
+    // when the css implementation is finished and have an actual fixation cross
+    const fixation = {
+        type: JsPsychImageKeyboardResponse,
+        stimulus: '',
+        choices: ['q', 'p', 'space'],
+        data: {
+            task: 'response',
+            correct_response: 'p' // vestigial - this does not apply here
+        },
+        on_start: function(trial) {
+            getNextTrialType();
+            console.log(`upcoming trial is ${currentTrialType}`); // debug only
+            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
+            const imageUrl = imageDataUrl(noisyGreyscaleImage);
+            trial.stimulus = imageUrl;
+        },
+        on_finish: function(data) {
+            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
+        }
+    };
 
 
-const debrief_block = {
-    type: htmlKeyboardResponse,
-    on_start: function () {
-        jsPsych.data.get().localSave('csv', `results.csv`);
-    },
-    stimulus: function() {
-        var trials = jsPsych.data.get().filter({task: 'response'});
-        var correct_trials = trials.filter({correct: true});
-        var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-        var rt = Math.round(correct_trials.select('rt').mean());
+    const debrief_block = {
+        type: htmlKeyboardResponse,
+        on_start: function () {
+            jsPsych.data.get().localSave('csv', `results.csv`);
+        },
+        stimulus: function() {
+            var trials = jsPsych.data.get().filter({task: 'response'});
+            var correct_trials = trials.filter({correct: true});
+            var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+            var rt = Math.round(correct_trials.select('rt').mean());
 
-        return `<p>You responded correctly on ${accuracy}% of the trials.</p>
-            <p>Your average response time was ${rt}ms.</p>
-            <p>Press any key to complete the experiment.</p>`;
-    },
-};
+            return `<p>You responded correctly on ${accuracy}% of the trials.</p>
+                <p>Your average response time was ${rt}ms.</p>
+                <p>Press any key to complete the experiment.</p>`;
+        },
+    };
 
-const test_procedure = {
-    timeline: [fixation, experimental_grid],
-    randomize_order: true,
-    repetitions: 15
-};
+    const test_procedure = {
+        timeline: [fixation, experimental_grid],
+        randomize_order: true,
+        repetitions: 15
+    };
 
-timeline.push(instructions);
-timeline.push(test_procedure);
-timeline.push(debrief_block);
+    timeline.push(instructions);
+    timeline.push(test_procedure);
+    timeline.push(debrief_block);
 
-jsPsych.run(timeline);
+    jsPsych.run(timeline);
+    ;
