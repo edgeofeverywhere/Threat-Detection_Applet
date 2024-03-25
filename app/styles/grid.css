@@ -1,20 +1,18 @@
-/* Default grid styles */
+/* Set grid properties on the .grid-container */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Adjusted to evenly distribute the columns */
-    grid-template-rows: repeat(3, 1fr); /* Added to specify three rows */
+    grid-template-columns: repeat(3, 9fr); /* Adjusted to evenly distribute the columns */
+    grid-template-rows: repeat(3, 9fr); /* Added to specify three rows */
     grid-gap: 10px;
     justify-content: center;
-    align-items: center;
-    margin: auto;
-    width: 80%; /* Adjusted to limit the width of the grid container */
-    max-width: 600px; /* Adjust as needed */
-    height: auto; /* Ensures the height adjusts based on content */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
 }
 
+/* Style for grid items */
 .grid-item {
-    width: 100%; /* Ensure grid items expand to fill the grid */
-    height: 100%; /* Ensure grid items expand to fill the grid */
+    width: fit-content; /* Ensure grid items expand to fill the grid */
+    height: fit-content; /* Ensure grid items expand to fill the grid */
     background-size: cover; /* Ensure the background image covers the entire grid item */
     background-position: center; /* Center the background image within the grid item */
     text-align: center;
@@ -22,16 +20,15 @@
     font-size: 24px;
 }
 
-
 /* Media queries for responsive design */
 @media screen and (max-width: 600px) {
     .grid-container {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, 1fr); /* Adjusted to 2 columns for smaller screens */
     }
 }
 
 @media screen and (max-width: 400px) {
     .grid-container {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Adjusted to 1 column for even smaller screens */
     }
 }
