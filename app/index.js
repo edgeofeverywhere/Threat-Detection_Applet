@@ -236,8 +236,6 @@ function assembleGridImageLocations(currentTrialType) {
 
     return { imageLocations, target_location };
 }
-document.addEventListener('DOMContentLoaded', function() {
-    const imageLocations = []
     function addGridItem(imageLocations) {
         const gridContainer = document.getElementById('grid-container');
         const gridItem = document.createElement('div');
@@ -287,8 +285,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const experimental_grid = {
         type: htmlKeyboardResponse,
         on_start: function() {
-            document.addEventListener('DOMContentLoaded', function() {
-            assembleGridImageLocations(currentTrialType);
+            document.addEventListener('DOMContentLoaded', function() { // removing this listener means it terminates prematurely owing to the element being null, but the below functions don't ever activate at all if this is left intact 
+            assembleGridImageLocations(currentTrialType); // recommend working some way to implement another listener or use existing to make this work
             assembleGridArray(imageLocations);
         })}, 
         choices: ['q', 'p', 'space'],
@@ -356,4 +354,4 @@ document.addEventListener('DOMContentLoaded', function() {
     timeline.push(debrief_block);
 
     jsPsych.run(timeline);
-    });
+    ;
