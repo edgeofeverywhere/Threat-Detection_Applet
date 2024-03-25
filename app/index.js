@@ -109,6 +109,7 @@ function generateImagePaths(currentTrialType) {
         randomDirection();
         distractortrng();
     }
+
     // call them all/state them once!
     const randomDir = randomDirection();
     const targetRngBird = targetrngBird();
@@ -225,6 +226,8 @@ function assembleGridImageLocations(currentTrialType) {
             console.log(`your chosen pics are ${imageLocations}`); // debug only
             break;
 
+        case 'Mask':
+
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
             imageLocations = generateImagePaths(currentTrialType);
@@ -240,15 +243,13 @@ function assembleGridImageLocations(currentTrialType) {
 function addGridItem(imageLocation, position, callback) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
-    gridContainer.style.height = VisualViewport.height;
-    gridContainer.style.width = VisualViewport.width;
     gridItem.classList.add('grid-item');
     // Create an image element
     const image = new Image();
     image.onload = function() {
         // When the image has loaded, set it as the background image of the grid item
         gridItem.style.backgroundImage = `url(${imageLocation})`;
-        gridItem.innerText = position; // debug only
+        // gridItem.innerText = position; // debug only
         gridContainer.appendChild(gridItem);
         console.log(`added grid item ${imageLocation}`); // debug only
         
@@ -272,14 +273,12 @@ function assembleGridArray(imageLocations) {
     // Counter to keep track of loaded images
     let loadedImagesCount = 0;
 
-    // Loop through each image location
+    // do the loop with the callback for rendering
     imageLocations.forEach((imageLocation, index) => {
-        // Add the grid item with a callback function to be executed when all images are loaded
         addGridItem(imageLocation, index + 1, function() {
             loadedImagesCount++;
             if (loadedImagesCount === imageLocations.length) {
                 console.log('All images have been loaded. Display the grid now.');
-                // Dispatch the custom event when all images are loaded
                 gridContainer.dispatchEvent(gridReadyEvent);
             }
         }); 
@@ -317,9 +316,12 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
+        on_finish: currentTrialType = Mask,
         post_trial_gap: 10
     };
 
+
+    
     // below is not a fixation or anything - we will rename this 
     // when the css implementation is finished and have an actual fixation cross
     const fixation = {

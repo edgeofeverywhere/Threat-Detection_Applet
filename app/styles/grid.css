@@ -1,21 +1,73 @@
 /* Default grid styles */
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-    justify-content: space-evenly;
-    align-items: center;
-    margin: auto;
+    /* Specify three columns with equal width */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Ensure the grid container maintains a 16:9 aspect ratio */
+    padding-top: 56.25%;
+    position: relative;
+    overflow: hidden; /* Prevent scroll wheel from appearing */
+    max-width: 70vw; /* Limit maximum width */
+    max-height: 70;
 }
 
 .grid-item {
-    /* Set fixed dimensions for each grid item */
-    width: auto; /* Adjusted to fill one-third of the grid container width */
-    height: auto; /* Adjusted to fill one-third of the grid container height */
+    /* Position the grid items absolutely within the grid container */
+    position: absolute;
+    /* Set initial size to fill one-third of the grid container width */
+    width: calc(100% / 3);
+    height: calc(100% / 3);
+    /* Set background image properties */
     background-size: fill;
+    background-repeat: no-repeat;
     background-position: center;
     text-align: center;
     color: white;
     font-size: 10px;
 }
 
+/* Set specific positions for each grid item */
+.grid-item:nth-child(1) {
+    top: 0;
+    left: 0;
+}
+
+.grid-item:nth-child(2) {
+    top: 0;
+    left: calc(100% / 3);
+}
+
+.grid-item:nth-child(3) {
+    top: 0;
+    left: calc(100% / 3 * 2);
+}
+
+.grid-item:nth-child(4) {
+    top: calc(100% / 3);
+    left: 0;
+}
+
+.grid-item:nth-child(5) {
+    top: calc(100% / 3);
+    left: calc(100% / 3);
+}
+
+.grid-item:nth-child(6) {
+    top: calc(100% / 3);
+    left: calc(100% / 3 * 2);
+}
+
+.grid-item:nth-child(7) {
+    top: calc(100% / 3 * 2);
+    left: 0;
+}
+
+.grid-item:nth-child(8) {
+    top: calc(100% / 3 * 2);
+    left: calc(100% / 3);
+}
+
+.grid-item:nth-child(9) {
+    top: calc(100% / 3 * 2);
+    left: calc(100% / 3 * 2);
+}
