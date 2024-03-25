@@ -206,6 +206,7 @@ function getNextTrialType() {
 }
 
 // choose which types of images to get based off of the trial type
+
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
 
@@ -239,24 +240,25 @@ function addGridItem(imageLocation, position) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
+    // Wait for the image to load before adding it to the grid item
     gridItem.style.backgroundImage = `url(${imageLocation})`;
     gridItem.innerText = position; // debug only
-    // No need to set grid-row and grid-column here
     gridContainer.appendChild(gridItem);
     console.log(`added grid item ${imageLocation}`); // debug only
 }
 
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
-    gridContainer.style.gridTemplateColumns = `repeat(3, 1fr)`; // Set grid columns
-    gridContainer.style.gridTemplateRows = `repeat(3, auto)`; // Set grid rows
-
+    // Clear any existing grid items
+    gridContainer.innerHTML = '';
+    
     // Loop through each image location
     imageLocations.forEach((imageLocation, index) => {
         // Add the grid item
         addGridItem(imageLocation, index + 1); // index + 1 to start position from 1
     });
 }
+
     
 
     // !EXPERIMENT TIMELINE BELOW!

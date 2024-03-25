@@ -1,10 +1,14 @@
 /* Set grid properties on the .grid-container */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Adjusted to evenly distribute the columns */
-    grid-template-rows: repeat(3, 1fr); /* Adjusted to specify three rows */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-template-rows: repeat(3, 1fr); /* 3 rows */
     justify-content: center;
-    overflow: hidden; /* Prevent scroll wheel from appearing */
+    align-items: center; /* Center align grid items */
+    gap: 10px; /* Add some gap between grid items */
+    width: 90%; /* Adjusted to limit the width of the grid container */
+    max-width: 600px; /* Adjust as needed */
+    margin: auto; /* Center the grid container on the page */
 }
 
 /* Style for grid items */
@@ -18,15 +22,3 @@
     font-size: 24px;
 }
 
-/* Media queries for responsive design */
-@media screen and (max-width: 600px) {
-    .grid-container {
-        grid-template-columns: repeat(2, 1fr); /* Adjusted to 2 columns for smaller screens */
-    }
-}
-
-@media screen and (max-width: 400px) {
-    .grid-container {
-        grid-template-columns: 1fr; /* Adjusted to 1 column for even smaller screens */
-    }
-}
