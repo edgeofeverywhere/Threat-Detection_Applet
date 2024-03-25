@@ -72,6 +72,7 @@ const width = 338;
 const height = 254;
 
 function generateImagePaths(currentTrialType) {
+    let imageLocations = []
     
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);
@@ -234,15 +235,21 @@ function assembleGridImageLocations(currentTrialType) {
             break;
     }
 }
-    function addGridItem(imageLocations) {
+    function addGridItem(imageURL, position) {
         const gridContainer = document.getElementById('grid-container');
         const gridItem = document.createElement('div');
         gridItem.classList.add('grid-item');
-        gridItem.style.backgroundImage = `url(${imageLocations})`;
+        gridItem.style.backgroundImage = `url(${imageURL})`;
         gridItem.innerText = position; // debug only
+        // Calculate row and column indices based on position
+        const row = Math.floor((position - 1) / 3) + 1; // Adjusted to start from 1
+        const column = ((position - 1) % 3) + 1; // Adjusted to start from 1
+        gridItem.style.gridRow = row;
+        gridItem.style.gridColumn = column;
         gridContainer.appendChild(gridItem);
-        console.log(`added grid item ${imageLocations}`); // debug only
+        console.log(`added grid item ${imageURL}`); // debug only
     }
+
 
     function assembleGridArray(imageLocations) {
         const gridContainer = document.getElementById('grid-container');
@@ -255,7 +262,7 @@ function assembleGridImageLocations(currentTrialType) {
         console.log(`we got ur screen size bb: ${screenWidth} x ${screenHeight}`) // debug only
 
         // set grid size
-        gridContainer.style.width = `${gridSize}px`; // terminates here usually-- even when in DOM wrapper 
+        gridContainer.style.width = `${gridSize}px`; 
         gridContainer.style.height = `${gridSize}px`;
 
         // add grid items to the grid container using the provided imagePaths, ideally
@@ -282,16 +289,15 @@ function assembleGridImageLocations(currentTrialType) {
 
     const experimental_grid = {
         type: htmlKeyboardResponse,
-        on_start: function() {
-            document.addEventListener('DOMContentLoaded', function() { // removing this listener means it terminates prematurely owing to the element being null, but the below functions don't ever activate at all if this is left intact 
-            assembleGridImageLocations(currentTrialType); // recommend working some way to implement another listener or use existing to make this work
+        on_load: function() {
+            assembleGridImageLocations(currentTrialType);
             assembleGridArray(imageLocations);
-        })}, 
+        }, 
         choices: ['q', 'p', 'space'],
         stimulus: `
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
-    </div>    `,    // I defined this twice since neither on the stimulus or on the HTML did document.getElementID work properly.
+    </div>    `, 
         data: {
             task: currentTrialType,
             reaction_time: 'rt',
