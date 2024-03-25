@@ -216,7 +216,7 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
             let imageLocations = generateImagePaths(currentTrialType);
-
+            
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
             imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
@@ -233,8 +233,6 @@ function assembleGridImageLocations(currentTrialType) {
             console.error('Unknown trial type:', currentTrialType); // should never trigger
             break;
     }
-
-    return { imageLocations, target_location };
 }
     function addGridItem(imageLocations) {
         const gridContainer = document.getElementById('grid-container');
