@@ -1,18 +1,16 @@
 /* Set grid properties on the .grid-container */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(3, 9fr); /* Adjusted to evenly distribute the columns */
-    grid-template-rows: repeat(3, 9fr); /* Added to specify three rows */
-    grid-gap: 10px;
+    grid-template-columns: repeat(3, 1fr); /* Adjusted to evenly distribute the columns */
+    grid-template-rows: repeat(3, 1fr); /* Adjusted to specify three rows */
     justify-content: center;
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
+    overflow: hidden; /* Prevent scroll wheel from appearing */
 }
 
 /* Style for grid items */
 .grid-item {
-    width: fit-content; /* Ensure grid items expand to fill the grid */
-    height: fit-content; /* Ensure grid items expand to fill the grid */
+    width: 100%; /* Ensure grid items expand to fill the grid */
+    height: 100%; /* Ensure grid items expand to fill the grid */
     background-size: cover; /* Ensure the background image covers the entire grid item */
     background-position: center; /* Center the background image within the grid item */
     text-align: center;

@@ -235,51 +235,28 @@ function assembleGridImageLocations(currentTrialType) {
             break;
     }
 }
-    function addGridItem(imageLocations, position) {
-        const gridContainer = document.getElementById('grid-container');
-        const gridItem = document.createElement('div');
-        gridItem.classList.add('grid-item');
-        gridItem.style.backgroundImage = `url(${imageLocations})`;
-        gridItem.innerText = position; // debug only
-        // Calculate row and column indices based on position
-        const row = Math.floor((position - 1) / 3) + 1; // Adjusted to start from 1
-        const column = ((position - 1) % 3) + 1; // Adjusted to start from 1
-        gridItem.style.gridRow = row;
-        gridItem.style.gridColumn = column;
-        gridContainer.appendChild(gridItem);
-        console.log(`added grid item ${imageLocations}`); // debug only
-    }
+function addGridItem(imageLocation, position) {
+    const gridContainer = document.getElementById('grid-container');
+    const gridItem = document.createElement('div');
+    gridItem.classList.add('grid-item');
+    gridItem.style.backgroundImage = `url(${imageLocation})`;
+    gridItem.innerText = position; // debug only
+    // No need to set grid-row and grid-column here
+    gridContainer.appendChild(gridItem);
+    console.log(`added grid item ${imageLocation}`); // debug only
+}
 
+function assembleGridArray(imageLocations) {
+    const gridContainer = document.getElementById('grid-container');
+    gridContainer.style.gridTemplateColumns = `repeat(3, 1fr)`; // Set grid columns
+    gridContainer.style.gridTemplateRows = `repeat(3, auto)`; // Set grid rows
 
-    function assembleGridArray(imageLocations) {
-        const gridContainer = document.getElementById('grid-container');
-        console.log(`the contents of gridcontainer are: ${gridContainer}`) // debug only
-    
-        // Calculate the number of items per row
-        const itemsPerRow = 3;
-        
-        // Calculate the total number of rows needed
-        const totalRows = Math.ceil(imageLocations.length / itemsPerRow);
-        
-        // Calculate the screen size
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        const gridSize = Math.min(screenWidth, screenHeight);
-    
-        // Set grid size
-        gridContainer.style.width = `${gridSize}px`;
-        gridContainer.style.height = `${gridSize}px`;
-    
-        // Loop through each image location
-        imageLocations.forEach((imageLocation, index) => {
-            // Calculate the row and column indices
-            const row = Math.floor(index / itemsPerRow) + 1;
-            const column = (index % itemsPerRow) + 1;
-    
-            // Add the grid item
-            addGridItem(imageLocation, row, column);
-        });
-    }
+    // Loop through each image location
+    imageLocations.forEach((imageLocation, index) => {
+        // Add the grid item
+        addGridItem(imageLocation, index + 1); // index + 1 to start position from 1
+    });
+}
     
 
     // !EXPERIMENT TIMELINE BELOW!
