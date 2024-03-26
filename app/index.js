@@ -9,24 +9,22 @@ import gaussian from 'gaussian';
 const imageLocations = [];
 let isMask = false;
 
-// initialize first:
-const jsPsych = initJsPsych({
-    on_finish: function() {
-        jsPsych.data.get().localSave('csv', 'results.csv');
+//!! MASK DRAWING MATH !!
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
-});
+}
 
-// !HELPERS BELOW!
 function generateNoisyGreyscaleImage(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
-
     // new greyscale image array
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             image[y][x] = Math.floor(Math.random() * 256); // random value between 0 and 255 (since rgb values have a max of 255!)
         }
     }
-
     // distribution parameters
     var distribution = gaussian(0, 30); // we will play around with this 
     for (let y = 0; y < height; y++) {
@@ -35,14 +33,12 @@ function generateNoisyGreyscaleImage(width, height) {
             image[y][x] = Math.max(0, Math.min(255, image[y][x] + noise));
         }
     }
-
     return image;
 }
 
 function imageDataUrl(image) {
   const width = image[0].length;
   const height = image.length;
-
   // makes a canvas element to display the mask
   var canvas = document.createElement('canvas');
   canvas.width = width;
@@ -62,23 +58,36 @@ function imageDataUrl(image) {
       }
   }
   context.putImageData(imageData, 0, 0);
-
-  // return embedded
+  // returns embedded
   return canvas.toDataURL('image/png');
 }
 
-// set this to the size of the mask as on the participants' screen - use same css
+// !! MASK RENDER SETTINGS !! 
+const maskImages = [];
 const width = 100;
 const height = 100;
+for (let i = 0; i < 9; i++) {
+    const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
+    const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
+    maskImages.push(RenderedMasks);
+}
 
+// !! JSPSYCH INITIALIZE !!
+const jsPsych = initJsPsych({
+    show_progress_bar: true,
+    on_finish: function() {
+        jsPsych.data.get().localSave('csv', 'results.csv');
+    }
+});
+
+// !!MAIN EXPERIMENT HELPERS!!
 function generateImagePaths(currentTrialType) {
     imageLocations.length = 0
-    
     if (isMask === true) {
-        for (let i = 0; i < 9; i++) {
-            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height); // Pass width and height parameters
-            const RenderedMasks = imageDataUrl(noisyGreyscaleImage); // Generate image data URL
-            imageLocations.push(RenderedMasks); // Push the generated image URL into imageLocations
+        if (isMask === true) {
+            // shuffle wuffle!
+            shuffleArray(maskImages);
+            imageLocations.push(...maskImages);
         }
         return imageLocations; // Return the imageLocations array
     } else {    
@@ -195,7 +204,7 @@ function randomizeTargetLocation() {
     return randomizeTargetLocation, target_location;
 }
 
-// SET NUMBER OF INSTANCES of each TYPE of Trial below
+// !! TRIAL PARAMETERS HERE !!
 const trialTypeDefs = {
 arrayNames: ['Ontogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_Threat_target','Ontogenetic_Distractor_notarget', 'Phylogenetic_Distractor_notarget'],
 arrayNums: [25, 25, 25, 25, 5, 5]
@@ -212,8 +221,6 @@ function getNextTrialType() {
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
 }
-
-// choose which types of images to get based off of the trial type
 
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
@@ -274,7 +281,7 @@ function assembleGridArray(imageLocations) {
     // Define a custom event
     const gridReadyEvent = new Event('gridReady');
     
-    // Counter to keep track of loaded images
+    // keeps track of
     let loadedImagesCount = 0;
 
     // do the loop with the callback for rendering
