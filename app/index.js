@@ -8,6 +8,7 @@ import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
 const imageLocations = [];
+const isMask = false;
 
 // initialize first:
 const jsPsych = initJsPsych({
@@ -116,8 +117,12 @@ function generateImagePaths(currentTrialType) {
     const targetRngGun = targetrngGun();
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
-
-    // switch and cases
+if (isMask === true) {
+    for (let i = 0; i < 9; i++) {
+    const noisyGreyscaleImage = generateNoiseArray(width, height);
+    const imageUrl = arraytoMask(noisyGreyscaleImage);
+}
+    else {// switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
             imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
@@ -176,7 +181,7 @@ function generateImagePaths(currentTrialType) {
         default:
             console.error('Unknown trial type:', currentTrialType);
             break;
-    }
+    }}
 
     return imageLocations;
 }
@@ -329,7 +334,6 @@ function assembleGridArray(imageLocations) {
         data: {
             task: 'response',
         },
-        on_start: currentTrialType = 'Mask',
         stimulus_duration: 1000,
         on_load: function() {
             assembleGridImageLocations(currentTrialType);
