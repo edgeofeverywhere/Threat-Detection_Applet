@@ -9,6 +9,7 @@ import gaussian from 'gaussian';
 // globals 
 const imageLocations = [];
 let isMask = false;
+const final_judgement = '';
 
 //!! MASK DRAWING MATH !!
 function shuffleArray(array) {
@@ -65,8 +66,8 @@ function imageDataUrl(image) {
 
 // !! MASK RENDER SETTINGS !! 
 const maskImages = [];
-const width = 254;
-const height = 254;
+const width = 338;
+const height = 210;
 for (let i = 0; i < 70; i++) {
     const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
     const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
@@ -353,7 +354,6 @@ function assembleGridArray(imageLocations) {
     stimulus_duration: 100,
         data: {
             task: currentTrialType,
-            reaction_time: 'rt',
             target_location: target_location,
             correct_response: final_judgement
         },
@@ -366,8 +366,6 @@ function assembleGridArray(imageLocations) {
         stimulus: '+',
         choices: ['q', 'p', 'space'],
         data: {
-            task: 'response',
-            correct_response: 'p' // vestigial - this does not apply here
         },
         on_start: function() {
             getNextTrialType();
