@@ -69,8 +69,8 @@ function imageDataUrl(image) {
 }
 
 // set this to the size of the mask as on the participants' screen - use same css
-const width = 338;
-const height = 254;
+const width = 100;
+const height = 100;
 
 function generateImagePaths(currentTrialType) {
     imageLocations.length = 0
@@ -316,6 +316,7 @@ function assembleGridArray(imageLocations) {
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
+        stimulus_duration: 400,
         data: {
             task: currentTrialType,
             reaction_time: 'rt',
@@ -352,18 +353,15 @@ function assembleGridArray(imageLocations) {
     // when the css implementation is finished and have an actual fixation cross
     const fixation = {
         type: JsPsychImageKeyboardResponse,
-        stimulus: '',
+        stimulus: '+',
         choices: ['q', 'p', 'space'],
         data: {
             task: 'response',
             correct_response: 'p' // vestigial - this does not apply here
         },
-        on_start: function(trial) {
+        on_start: function() {
             getNextTrialType();
             console.log(`upcoming trial is ${currentTrialType}`); // debug only
-            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-            const imageUrl = imageDataUrl(noisyGreyscaleImage);
-            trial.stimulus = imageUrl;
         },
         on_finish: function(data) {
             data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
