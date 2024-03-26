@@ -6,6 +6,7 @@ import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
+// globals 
 const imageLocations = [];
 let isMask = false;
 
@@ -64,9 +65,9 @@ function imageDataUrl(image) {
 
 // !! MASK RENDER SETTINGS !! 
 const maskImages = [];
-const width = 100;
-const height = 100;
-for (let i = 0; i < 9; i++) {
+const width = 254;
+const height = 254;
+for (let i = 0; i < 70; i++) {
     const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
     const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
     maskImages.push(RenderedMasks);
@@ -74,7 +75,6 @@ for (let i = 0; i < 9; i++) {
 
 // !! JSPSYCH INITIALIZE !!
 const jsPsych = initJsPsych({
-    show_progress_bar: true,
     on_finish: function() {
         jsPsych.data.get().localSave('csv', 'results.csv');
     }
@@ -84,12 +84,11 @@ const jsPsych = initJsPsych({
 function generateImagePaths(currentTrialType) {
     imageLocations.length = 0
     if (isMask === true) {
-        if (isMask === true) {
             // shuffle wuffle!
             shuffleArray(maskImages);
-            imageLocations.push(...maskImages);
-        }
-        return imageLocations; // Return the imageLocations array
+            imageLocations.push(...maskImages.slice(0, 9));
+        
+        return imageLocations;
     } else {    
 
     function randomDirection() {
@@ -127,14 +126,12 @@ function generateImagePaths(currentTrialType) {
         randomDirection();
         distractortrng();
     }
-
     // call them all/state them once!
     const randomDir = randomDirection();
     const targetRngBird = targetrngBird();
     const targetRngGun = targetrngGun();
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
-    
     // switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
@@ -225,7 +222,6 @@ function getNextTrialType() {
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
     let imageLocations = generateImagePaths(currentTrialType);
-    
     // switchie
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
@@ -275,13 +271,10 @@ function addGridItem(imageLocation, position, callback) {
 
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
-    // Clear any existing grid items
     gridContainer.innerHTML = '';
     
     // Define a custom event
     const gridReadyEvent = new Event('gridReady');
-    
-    // keeps track of
     let loadedImagesCount = 0;
 
     // do the loop with the callback for rendering
@@ -295,11 +288,9 @@ function assembleGridArray(imageLocations) {
         }); 
     });
 }
-
     // !EXPERIMENT TIMELINE BELOW!
 
     const timeline = [];
-
     const instructions = {
         type: htmlKeyboardResponse,
         stimulus: `
@@ -316,6 +307,7 @@ function assembleGridArray(imageLocations) {
         on_load: function() {
             assembleGridImageLocations(currentTrialType);
             assembleGridArray(imageLocations);
+            isMask = true;
         }, 
         choices: ['q', 'p', 'space'],
         stimulus: `
@@ -329,9 +321,6 @@ function assembleGridArray(imageLocations) {
             target_location: target_location
         },
         trial_duration: 400,
-        on_finish: function() {isMask = true;
-        console.log(isMask)},
-        post_trial_gap: 10
     };
 
     const backmask = {
@@ -345,7 +334,7 @@ function assembleGridArray(imageLocations) {
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
-    stimulus_duration: 10,
+    stimulus_duration: 100,
         data: {
             task: currentTrialType,
             reaction_time: 'rt',
