@@ -331,7 +331,7 @@ function assembleGridArray(imageLocations) {
             assembleGridArray(imageLocations);
             isMask = true;
         }, 
-        choices: ['q', 'p', 'space'],
+        choices: [],
         stimulus: `
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
@@ -355,8 +355,8 @@ function assembleGridArray(imageLocations) {
         data: {
             task: currentTrialType,
             target_location: target_location,
-            correct_response: final_judgement
-        },
+            correct_response: final_judgement,
+s        },
         on_finish: function() {isMask = false;},
         post_trial_gap: 10
     };
