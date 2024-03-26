@@ -8,6 +8,7 @@ import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
 const imageLocations = [];
+let isMask = false;
 
 // initialize first:
 const jsPsych = initJsPsych({
@@ -74,6 +75,15 @@ const height = 254;
 function generateImagePaths(currentTrialType) {
     imageLocations.length = 0
     
+    if (isMask === true) {
+        for (let i = 0; i < 9; i++) {
+            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height); // Pass width and height parameters
+            const RenderedMasks = imageDataUrl(noisyGreyscaleImage); // Generate image data URL
+            imageLocations.push(RenderedMasks); // Push the generated image URL into imageLocations
+        }
+        return imageLocations; // Return the imageLocations array
+    } else {    
+
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);
         const randomDirection = randomDirectionInt === 0 ? 'Normal' : 'Reverse';
@@ -116,12 +126,7 @@ function generateImagePaths(currentTrialType) {
     const targetRngGun = targetrngGun();
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
-    if (isMask === true) {
-        for (let i = 0; i < 9; i++) {
-        generateNoisyGreyscaleImage();  
-            RenderedMasks = imageDataUrl(image);
-            imageLocations.push(RenderedMasks);
-    }} else {
+    
     // switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
@@ -265,7 +270,7 @@ function addGridItem(imageLocation, position, callback) {
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
     // Clear any existing grid items
-    // gridContainer.innerHTML = '';
+    gridContainer.innerHTML = '';
     
     // Define a custom event
     const gridReadyEvent = new Event('gridReady');
@@ -316,6 +321,8 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
+        on_finish: function() {isMask = true;
+        console.log(isMask)},
         post_trial_gap: 10
     };
 
@@ -336,6 +343,7 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
+        on_finish: function() {isMask = false;},
         post_trial_gap: 10
     };
 
@@ -381,7 +389,7 @@ function assembleGridArray(imageLocations) {
     };
 
     const test_procedure = {
-        timeline: [fixation, experimental_grid],
+        timeline: [fixation, experimental_grid, backmask],
         randomize_order: true,
         repetitions: 15
     };
