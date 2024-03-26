@@ -157,7 +157,6 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Ontogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
-                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -166,7 +165,6 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Phylogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
-                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -210,6 +208,7 @@ function getNextTrialType() {
 
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
+    let imageLocations = generateImagePaths(currentTrialType);
 
     // switchie
     switch (currentTrialType) {
@@ -218,7 +217,6 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-            let imageLocations = generateImagePaths(currentTrialType);
             
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
@@ -230,7 +228,6 @@ function assembleGridImageLocations(currentTrialType) {
 
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-            imageLocations = generateImagePaths(currentTrialType);
             console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
 
@@ -316,7 +313,6 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
-        on_finish: currentTrialType = Mask,
         post_trial_gap: 10
     };
 
