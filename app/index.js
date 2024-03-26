@@ -82,7 +82,7 @@ const jsPsych = initJsPsych({
 
 // !!MAIN EXPERIMENT HELPERS!!
 function generateImagePaths(currentTrialType) {
-    judgements();
+    judgements(currentTrialType);
     imageLocations.length = 0
     if (isMask === true) {
             // shuffle wuffle!
