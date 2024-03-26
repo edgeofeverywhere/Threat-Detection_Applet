@@ -339,9 +339,6 @@ function assembleGridArray(imageLocations) {
     };
 
     const backmask = {
-        on_start: function() {
-            judgements(currentTrialType);
-        },
         type: htmlKeyboardResponse,
         on_load: function() {
             assembleGridImageLocations(currentTrialType);
