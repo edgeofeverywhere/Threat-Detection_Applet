@@ -82,6 +82,7 @@ const jsPsych = initJsPsych({
 
 // !!MAIN EXPERIMENT HELPERS!!
 function generateImagePaths(currentTrialType) {
+    judgements();
     imageLocations.length = 0
     if (isMask === true) {
             // shuffle wuffle!
@@ -219,6 +220,26 @@ function getNextTrialType() {
     currentTrialType = nextTrialType;
 }
 
+function judgements(currentTrialType) {
+    let final_judgement = ''
+    switch(currentTrialType) {
+    case 'Ontogenetic_Distractor_Threat_target':
+    case 'Phylogenetic_Distractor_Threat_target':
+        final_judgement = 'q';
+        break;
+    case 'Ontogenetic_Distractor_Nonthreat_target':
+    case 'Phylogenetic_Distractor_Threat_target':
+        final_judgement = 'p';
+        break;
+    case 'Ontogenetic_Distractor_notarget':
+    case 'Phylogenetic_Distractor_notarget':
+        final_judgement = 'space';
+        break;
+    
+}
+return final_judgement;
+}
+
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
     let imageLocations = generateImagePaths(currentTrialType);
@@ -315,11 +336,6 @@ function assembleGridArray(imageLocations) {
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
         stimulus_duration: 400,
-        data: {
-            task: currentTrialType,
-            reaction_time: 'rt',
-            target_location: target_location
-        },
         trial_duration: 400,
     };
 
@@ -338,7 +354,8 @@ function assembleGridArray(imageLocations) {
         data: {
             task: currentTrialType,
             reaction_time: 'rt',
-            target_location: target_location
+            target_location: target_location,
+            correct_response: final_judgement
         },
         on_finish: function() {isMask = false;},
         post_trial_gap: 10
