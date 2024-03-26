@@ -7,9 +7,9 @@ import 'ndarray-ops';
 import gaussian from 'gaussian'; 
 
 // globals 
-const imageLocations = [];
+let imageLocations = [];
 let isMask = false;
-const final_judgement = '';
+let final_judgement = '';
 
 //!! MASK DRAWING MATH !!
 function shuffleArray(array) {
@@ -81,10 +81,11 @@ const jsPsych = initJsPsych({
     }
 });
 
-// !!MAIN EXPERIMENT HELPERS!!
+// !! MAIN EXPERIMENT HELPERS !!
 function generateImagePaths(currentTrialType) {
-    judgements(currentTrialType);
-    imageLocations.length = 0
+    final_judgement = judgements(currentTrialType);
+    console.log(final_judgement);
+    imageLocations.length = 0;
     if (isMask === true) {
             // shuffle wuffle!
             shuffleArray(maskImages);
@@ -196,7 +197,7 @@ function generateImagePaths(currentTrialType) {
     return imageLocations;
 }
 
-const target_location = 0
+let target_location = 0
 
 function randomizeTargetLocation() {
     const randomizeTargetLocation = jsPsych.randomization.randomInt(0, 9);
@@ -210,7 +211,7 @@ arrayNums: [25, 25, 25, 25, 5, 5]
 }
 
 const experimental_trajectory = jsPsych.randomization.repeat(trialTypeDefs.arrayNames, trialTypeDefs.arrayNums);
-console.log(experimental_trajectory) // delete after testing
+console.log(experimental_trajectory) // debug only
 
 let ticker = 0;
 let currentTrialType = experimental_trajectory[ticker];
@@ -222,24 +223,21 @@ function getNextTrialType() {
 }
 
 function judgements(currentTrialType) {
-    let final_judgement = ''
     switch(currentTrialType) {
     case 'Ontogenetic_Distractor_Threat_target':
     case 'Phylogenetic_Distractor_Threat_target':
         final_judgement = 'q';
-        break;
+        return final_judgement;
     case 'Ontogenetic_Distractor_Nonthreat_target':
     case 'Phylogenetic_Distractor_Threat_target':
         final_judgement = 'p';
-        break;
+        return final_judgement;
     case 'Ontogenetic_Distractor_notarget':
     case 'Phylogenetic_Distractor_notarget':
         final_judgement = 'space';
-        break;
+        return final_judgement;
     
-}
-return final_judgement;
-}
+    }}
 
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
@@ -310,7 +308,7 @@ function assembleGridArray(imageLocations) {
         }); 
     });
 }
-    // !EXPERIMENT TIMELINE BELOW!
+    // !! EXPERIMENT TIMELINE BELOW !!
 
     const timeline = [];
     const instructions = {
@@ -341,10 +339,14 @@ function assembleGridArray(imageLocations) {
     };
 
     const backmask = {
+        on_start: function() {
+            judgements(currentTrialType);
+        },
         type: htmlKeyboardResponse,
         on_load: function() {
             assembleGridImageLocations(currentTrialType);
             assembleGridArray(imageLocations);
+
         }, 
         choices: ['q', 'p', 'space'],
         stimulus: `
@@ -352,12 +354,14 @@ function assembleGridArray(imageLocations) {
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
     stimulus_duration: 100,
-        data: {
-            task: currentTrialType,
-            target_location: target_location,
-            correct_response: final_judgement,
+        on_finish: function() {
+            jsPsych.data.addProperties({
+                task: currentTrialType,
+                image_location: target_location, 
+                correct_response: final_judgement,
+            })
+            isMask = false;        
         },
-        on_finish: function() {isMask = false;},
         post_trial_gap: 10
     };
 
@@ -371,7 +375,6 @@ function assembleGridArray(imageLocations) {
             console.log(`upcoming trial is ${currentTrialType}`); // debug only
         },
     };
-
 
     const debrief_block = {
         type: htmlKeyboardResponse,
@@ -393,7 +396,7 @@ function assembleGridArray(imageLocations) {
     const test_procedure = {
         timeline: [fixation, experimental_grid, backmask],
         randomize_order: true,
-        repetitions: 15
+        repetitions: 3
     };
 
     timeline.push(instructions);
