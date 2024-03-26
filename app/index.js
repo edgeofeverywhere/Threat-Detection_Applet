@@ -316,59 +316,6 @@ function assembleGridArray(imageLocations) {
         },
         post_trial_gap: 10
     };
-<<<<<<< HEAD
-
-    // below is not a fixation or anything - we will rename this 
-    // when the css implementation is finished and have an actual fixation cross
-    const fixation = {
-        type: JsPsychImageKeyboardResponse,
-        stimulus: '',
-        choices: ['q', 'p', 'space'],
-        data: {
-            task: 'response',
-            correct_response: 'p' // vestigial - this does not apply here
-        },
-        on_start: function(trial) {
-            getNextTrialType();
-            console.log(`upcoming trial is ${currentTrialType}`); // debug only
-            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-            const imageUrl = imageDataUrl(noisyGreyscaleImage);
-            trial.stimulus = imageUrl;
-        },
-        on_finish: function(data) {
-            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
-        }
-    };
-
-
-    const debrief_block = {
-        type: htmlKeyboardResponse,
-        on_start: function () {
-            jsPsych.data.get().localSave('csv', `results.csv`);
-        },
-        stimulus: function() {
-            var trials = jsPsych.data.get().filter({task: 'response'});
-            var correct_trials = trials.filter({correct: true});
-            var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-            var rt = Math.round(correct_trials.select('rt').mean());
-
-            return `<p>You responded correctly on ${accuracy}% of the trials.</p>
-                <p>Your average response time was ${rt}ms.</p>
-                <p>Press any key to complete the experiment.</p>`;
-        },
-    };
-
-    const test_procedure = {
-        timeline: [fixation, experimental_grid],
-        randomize_order: true,
-        repetitions: 15
-    };
-
-    timeline.push(instructions);
-    timeline.push(test_procedure);
-    timeline.push(debrief_block);
-
-=======
 
 
     const backmask = {
@@ -444,6 +391,5 @@ function assembleGridArray(imageLocations) {
     timeline.push(test_procedure);
     timeline.push(debrief_block);
 
->>>>>>> develop
     jsPsych.run(timeline);
     ;
