@@ -171,15 +171,6 @@ function generateImagePaths(currentTrialType) {
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
                 imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
-<<<<<<< HEAD
-=======
-            }
-        case 'Mask':
-            for (let i = 0; i < 9; i++) {
-                populatemask = generateNoiseArray();
-                mask2canvas = mask2canvas(populatemask);
-                imageLocations.push(mask2canvas);
->>>>>>> develop
             }
             break;
         default:
@@ -219,10 +210,7 @@ function getNextTrialType() {
 
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
-<<<<<<< HEAD
-=======
     let imageLocations = generateImagePaths(currentTrialType);
->>>>>>> develop
 
     // switchie
     switch (currentTrialType) {
@@ -231,10 +219,6 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-<<<<<<< HEAD
-            let imageLocations = generateImagePaths(currentTrialType);
-=======
->>>>>>> develop
             
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
@@ -244,11 +228,6 @@ function assembleGridImageLocations(currentTrialType) {
 
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-<<<<<<< HEAD
-            imageLocations = generateImagePaths(currentTrialType);
-=======
-            generateImagePaths(currentTrialType);
->>>>>>> develop
             console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
 
@@ -257,17 +236,6 @@ function assembleGridImageLocations(currentTrialType) {
             break;
     }
 }
-<<<<<<< HEAD
-function addGridItem(imageLocation, position) {
-    const gridContainer = document.getElementById('grid-container');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    // Wait for the image to load before adding it to the grid item
-    gridItem.style.backgroundImage = `url(${imageLocation})`;
-    gridItem.innerText = position; // debug only
-    gridContainer.appendChild(gridItem);
-    console.log(`added grid item ${imageLocation}`); // debug only
-=======
 
 function addGridItem(imageLocation, position, callback) {
     const gridContainer = document.getElementById('grid-container');
@@ -289,40 +257,10 @@ function addGridItem(imageLocation, position, callback) {
     };
     // Set the source of the image element to trigger loading
     image.src = imageLocation;
->>>>>>> develop
 }
 
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
-<<<<<<< HEAD
-    // Clear any existing grid items
-    gridContainer.innerHTML = '';
-    
-    // Loop through each image location
-    imageLocations.forEach((imageLocation, index) => {
-        // Add the grid item
-        addGridItem(imageLocation, index + 1); // index + 1 to start position from 1
-    });
-}
-
-    
-
-    // !EXPERIMENT TIMELINE BELOW!
-
-    const timeline = [];
-
-    const instructions = {
-        type: htmlKeyboardResponse,
-        stimulus: `
-            <p>ignore this text it's not signifying anything rn since we are still building.
-            </p>
-            <div style='width: 100px;'>
-            </div>
-        `,
-        post_trial_gap: 2000
-    };
-
-=======
     // clear
 
     gridContainer.innerHTML = '';
@@ -360,7 +298,6 @@ function assembleGridArray(imageLocations) {
         post_trial_gap: 2000
     };
 
->>>>>>> develop
     const experimental_grid = {
         type: htmlKeyboardResponse,
         on_load: function() {
