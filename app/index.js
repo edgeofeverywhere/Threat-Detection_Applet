@@ -327,7 +327,6 @@ function assembleGridArray(imageLocations) {
         post_trial_gap: 10
     };
 
-
     const backmask = {
         type: htmlKeyboardResponse,
         on_load: function() {
@@ -349,9 +348,6 @@ function assembleGridArray(imageLocations) {
         post_trial_gap: 10
     };
 
-    
-    // below is not a fixation or anything - we will rename this 
-    // when the css implementation is finished and have an actual fixation cross
     const fixation = {
         type: htmlKeyboardResponse,
         stimulus: '+',
