@@ -17,13 +17,13 @@ const jsPsych = initJsPsych({
 });
 
 // !HELPERS BELOW!
-function generateNoisyGreyscaleImage(width, height) {
+function generateNoiseArray(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
 
     // new greyscale image array
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            image[y][x] = Math.floor(Math.random() * 256); // random value between 0 and 255 (since rgb values have a max of 255!)
+            image[y][x] = Math.floor(Math.random() * 256); // random value between 0 and 256 (since rgb values have a max of 255, and there will never be 1)
         }
     }
 
@@ -39,7 +39,7 @@ function generateNoisyGreyscaleImage(width, height) {
     return image;
 }
 
-function imageDataUrl(image) {
+function arraytoMask(image) {
   const width = image[0].length;
   const height = image.length;
 
@@ -157,7 +157,6 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Ontogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
-                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -166,11 +165,16 @@ function generateImagePaths(currentTrialType) {
             break;
         case 'Phylogenetic_Distractor_notarget':
             for (let i = 0; i < 9; i++) {
-                let imageLocations;
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
                 imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+            }
+        case 'Mask':
+            for (let i = 0; i < 9; i++) {
+                populatemask = generateNoiseArray();
+                mask2canvas = mask2canvas(populatemask);
+                imageLocations.push(mask2canvas);
             }
             break;
         default:
@@ -207,9 +211,9 @@ function getNextTrialType() {
 }
 
 // choose which types of images to get based off of the trial type
-
 function assembleGridImageLocations(currentTrialType) {
     let target_location = 'N/A';
+    let imageLocations = generateImagePaths(currentTrialType);
 
     // switchie
     switch (currentTrialType) {
@@ -218,7 +222,6 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-            let imageLocations = generateImagePaths(currentTrialType);
             
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
@@ -226,11 +229,9 @@ function assembleGridImageLocations(currentTrialType) {
             console.log(`your chosen pics are ${imageLocations}`); // debug only
             break;
 
-        case 'Mask':
-
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-            imageLocations = generateImagePaths(currentTrialType);
+            generateImagePaths(currentTrialType);
             console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
 
@@ -244,18 +245,18 @@ function addGridItem(imageLocation, position, callback) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
-    // Create an image element
+    // new page image element
     const image = new Image();
     image.onload = function() {
-        // When the image has loaded, set it as the background image of the grid item
+        // when the image has loaded, set it as the background image of the grid item
         gridItem.style.backgroundImage = `url(${imageLocation})`;
-        // gridItem.innerText = position; // debug only
+        // gridItem.innerText = position; // debug only - we disabled this
         gridContainer.appendChild(gridItem);
         console.log(`added grid item ${imageLocation}`); // debug only
         
-        // Check if this is the last image to load
+        // check if this is the last image to load
         if (callback && position === imageLocations.length) {
-            callback(); // Call the callback function to indicate that all images have been loaded
+            callback(); 
         }
     };
     // Set the source of the image element to trigger loading
@@ -264,13 +265,14 @@ function addGridItem(imageLocation, position, callback) {
 
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
-    // Clear any existing grid items
+    // clear
+
     gridContainer.innerHTML = '';
     
-    // Define a custom event
+    // define ready state
     const gridReadyEvent = new Event('gridReady');
     
-    // Counter to keep track of loaded images
+    // counter to keep track of loaded images for display
     let loadedImagesCount = 0;
 
     // do the loop with the callback for rendering
@@ -316,10 +318,31 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
-        on_finish: currentTrialType = Mask,
         post_trial_gap: 10
     };
 
+
+    const backmask = {
+        type: htmlKeyboardResponse,
+        stimulus:` 
+        <div id="grid-container">
+        <!-- Grid items will be dynamically added here -->
+    </div>    `,
+        choices: ['p'],
+        response_ends_trial: false,
+        data: {
+            task: 'response',
+        },
+        on_start: currentTrialType = 'Mask',
+        stimulus_duration: 1000,
+        on_load: function() {
+            assembleGridImageLocations(currentTrialType);
+            assembleGridArray(imageLocations);
+        }, 
+        on_finish: function(data) {
+            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
+        }
+    };
 
     
     // below is not a fixation or anything - we will rename this 
@@ -335,8 +358,8 @@ function assembleGridArray(imageLocations) {
         on_start: function(trial) {
             getNextTrialType();
             console.log(`upcoming trial is ${currentTrialType}`); // debug only
-            const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-            const imageUrl = imageDataUrl(noisyGreyscaleImage);
+            const noisyGreyscaleImage = generateNoiseArray(width, height);
+            const imageUrl = arraytoMask(noisyGreyscaleImage);
             trial.stimulus = imageUrl;
         },
         on_finish: function(data) {
@@ -363,7 +386,7 @@ function assembleGridArray(imageLocations) {
     };
 
     const test_procedure = {
-        timeline: [fixation, experimental_grid],
+        timeline: [fixation, backmask, experimental_grid],
         randomize_order: true,
         repetitions: 15
     };
