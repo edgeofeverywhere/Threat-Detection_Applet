@@ -2,7 +2,6 @@ import { initJsPsych } from 'jspsych';
 import 'jspsych/css/jspsych.css';
 import './styles/grid.css';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
-import JsPsychImageKeyboardResponse from '@jspsych/plugin-image-keyboard-response';
 import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
@@ -322,6 +321,7 @@ function assembleGridArray(imageLocations) {
             reaction_time: 'rt',
             target_location: target_location
         },
+        trial_duration: 400,
         on_finish: function() {isMask = true;
         console.log(isMask)},
         post_trial_gap: 10
@@ -339,6 +339,7 @@ function assembleGridArray(imageLocations) {
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
+    stimulus_duration: 10,
         data: {
             task: currentTrialType,
             reaction_time: 'rt',
@@ -352,7 +353,7 @@ function assembleGridArray(imageLocations) {
     // below is not a fixation or anything - we will rename this 
     // when the css implementation is finished and have an actual fixation cross
     const fixation = {
-        type: JsPsychImageKeyboardResponse,
+        type: htmlKeyboardResponse,
         stimulus: '+',
         choices: ['q', 'p', 'space'],
         data: {
