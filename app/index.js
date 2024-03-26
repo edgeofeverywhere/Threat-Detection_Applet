@@ -356,7 +356,7 @@ function assembleGridArray(imageLocations) {
             task: currentTrialType,
             target_location: target_location,
             correct_response: final_judgement,
-s        },
+        },
         on_finish: function() {isMask = false;},
         post_trial_gap: 10
     };
@@ -364,16 +364,12 @@ s        },
     const fixation = {
         type: htmlKeyboardResponse,
         stimulus: '+',
-        choices: ['q', 'p', 'space'],
-        data: {
-        },
+        stimulus_duration: 500,
+        trial_duration: 500,
         on_start: function() {
             getNextTrialType();
             console.log(`upcoming trial is ${currentTrialType}`); // debug only
         },
-        on_finish: function(data) {
-            data.correct = jsPsych.pluginAPI.compareKeys(data.response, data.correct_response); // vestigial - this does not apply here
-        }
     };
 
 
