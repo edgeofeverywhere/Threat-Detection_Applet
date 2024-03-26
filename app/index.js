@@ -80,6 +80,14 @@ const jsPsych = initJsPsych({
         jsPsych.data.get().localSave('csv', 'results.csv');
     }
 });
+// !! this is the issue... - when ran as a callback, has no access to globals !!
+function addPropertiesToData() {
+    jsPsych.data.addProperties({
+        task: currentTrialType,
+        image_location: target_location, 
+        correct_response: final_judgement,
+    });
+}
 
 // !! MAIN EXPERIMENT HELPERS !!
 function generateImagePaths(currentTrialType) {
@@ -343,7 +351,6 @@ function assembleGridArray(imageLocations) {
         on_load: function() {
             assembleGridImageLocations(currentTrialType);
             assembleGridArray(imageLocations);
-
         }, 
         choices: ['q', 'p', 'space'],
         stimulus: `
@@ -351,12 +358,7 @@ function assembleGridArray(imageLocations) {
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
     stimulus_duration: 100,
-        on_finish: function() {
-            jsPsych.data.addProperties({
-                task: currentTrialType,
-                image_location: target_location, 
-                correct_response: final_judgement,
-            })
+        on_finish: function() { addPropertiesToData();
             isMask = false;        
         },
         post_trial_gap: 10
