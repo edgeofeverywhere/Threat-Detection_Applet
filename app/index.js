@@ -16,28 +16,16 @@ let stimulusDuration = 500
 let numofBreaks = 1; // temporary pokerap easteregg
 let currentBlockDef = [];
 let blockorder = [];
-let nextBlock = '';
 let experimental_trajectory = [];
+
 //!! MASK DRAWING MATH !!
+
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
-
-function customRepeat(arrayNames, arrayNums) {
-    let result = [];
-    for (let i = 0; i < arrayNames.length; i++) {
-        for (let j = 0; j < arrayNums[i]; j++) {
-            result.push(arrayNames[i]);
-        }
-    }
-    // Shuffle the result array
-    shuffleArray(result);
-    return result;
-}
-
 
 function generateNoisyGreyscaleImage(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
@@ -88,7 +76,7 @@ function imageDataUrl(image) {
 const maskImages = [];
 const width = 338;
 const height = 210;
-for (let i = 0; i < 70; i++) {
+for (let i = 0; i < 50; i++) {
     const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
     const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
     maskImages.push(RenderedMasks);
@@ -115,7 +103,6 @@ function generateImagePaths(currentTrialType) {
             }
         return imageLocations;
     } else {
-
     function randomDirection() {
         const randomDirectionInt = jsPsych.randomization.randomInt(0, 1);
         const randomDirection = randomDirectionInt === 0 ? 'Normal' : 'Reverse';
@@ -253,18 +240,13 @@ function assembleGridImageLocations(currentTrialType) {
         case 'Phylogenetic_Distractor_Threat_target':
         case 'Phylogenetic_Distractor_Nonthreat_target':
             target_location = randomizeTargetLocation();
-            
             // manipulate the array according to the randomized target location
             const targetImage = imageLocations.shift();
             imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
-            console.log(`your chosen pics are ${imageLocations}`); // debug only
             break;
-
         case 'Ontogenetic_Distractor_notarget':
         case 'Phylogenetic_Distractor_notarget':
-            console.log(`your chosen pics are ${imageLocations}`); // debug only 
             break;
-
         default:
             console.error('Unknown trial type:', currentTrialType); // should never trigger
             break;
@@ -278,35 +260,30 @@ function addGridItem(imageLocation, position, callback) {
     // Create an image element
     const image = new Image();
     image.onload = function() {
-        // When the image has loaded, set it as the background image of the grid item
+        // when the image has loaded, set it as the background image of the grid item
         gridItem.style.backgroundImage = `url(${imageLocation})`;
         // gridItem.innerText = position; // debug only
         gridContainer.appendChild(gridItem);
-        console.log(`added grid item ${imageLocation}`); // debug only
-        
-        // ceck if this is the last image to load
+        console.log(`added grid item ${imageLocation}`); // debug only        
+        // check if this is the last image to load
         if (callback && position === imageLocations.length) {
-            callback(); // call the callback function to indicate that all images have been loaded
+            callback(); // call the callback function to indicate that all images have been loaded in case event listener doesn't work
         }
     };
-    // Set the source of the image element to trigger loading
+    // set the source of the image element to trigger loading
     image.src = imageLocation;
 }
 
 function assembleGridArray(imageLocations) {
     const gridContainer = document.getElementById('grid-container');
     gridContainer.innerHTML = '';
-    
-    // Define a custom event
     const gridReadyEvent = new Event('gridReady');
     let loadedImagesCount = 0;
-
     // do the loop with the callback for rendering
     imageLocations.forEach((imageLocation, index) => {
         addGridItem(imageLocation, index + 1, function() {
             loadedImagesCount++;
             if (loadedImagesCount === imageLocations.length) {
-                console.log('All images have been loaded. Display the grid now.');
                 gridContainer.dispatchEvent(gridReadyEvent);
             }
         }); 
@@ -314,12 +291,11 @@ function assembleGridArray(imageLocations) {
 }
 
 // !! TRIAL // BLOCK PARAMETERS HERE !!
-
 let blocktypes = {
     arrayNames: ['Ontogenetic', 'Phylogenetic'],
     arrayNums: [2, 2]
 }
-    
+
 // set the blockorder a priori - no funny bidness
 function setBlockOrder() {
     blockorder = jsPsych.randomization.repeat(blocktypes.arrayNames, blocktypes.arrayNums);
@@ -328,39 +304,34 @@ function setBlockOrder() {
 
 setBlockOrder();
 let currentBlock = blockorder[0]
-console.log(blockorder); // debug only
+// console.log(blockorder); // debug only
 let blockticker = 0;
 
 function getNextBlock() {
-    console.log(`current block = ${currentBlock}`);
     blockticker = (blockticker + 1) % blockorder.length;
     let nextBlock = blockorder[blockticker];
-    currentBlock = nextBlock; // Update currentBlock to the next block
-    console.log(`next block = ${currentBlock}`);
+    currentBlock = nextBlock;
     return nextBlock;
 }
 
-console.log(`@start, the current block is: ${currentBlock}`)
-
-
+// console.log(`@start, the current block is: ${currentBlock}`)
 function getValidTrialTypes(currentBlock) {
     console.log('I got called');
         switch(currentBlock) {
             case 'Ontogenetic':
                 currentBlockDef = ['Ontogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_Nonthreat_target', 'Ontogenetic_Distractor_notarget'];
-                console.log(` case ontogenetic: ${currentBlockDef}`)
                 return currentBlockDef;
             case 'Phylogenetic':
                 currentBlockDef = ['Phylogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_notarget'];
-                console.log(`case phylogenetic: ${currentBlockDef}`)
                 return currentBlockDef;
         }
     }
+
 // call immediately on bootup
 getValidTrialTypes(currentBlock);
-
+// !! SET BELOW !!
 let blocktrialArray = {
-    arrayNames: currentBlockDef, // Ensure currentBlockDef is properly initialized before this line
+    arrayNames: currentBlockDef,
     arrayNums: [5, 5, 1]
 };
 
@@ -370,12 +341,12 @@ function updateBlocktrialArray() {
 
 updateBlocktrialArray();
 
-    // todo - do we have these fixed??? const practice_rounds = ['Ontogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_notarget', 'Ontogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_Threat_target']
-    // let ticker_practice = 0; TODO PRACTICE STUFF
-    // let currentTrialType_practice = practice_rounds[ticker_practice]; TODO (PRACTICE ROUND?)
+// todo - do we have these fixed??? const practice_rounds = ['Ontogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_notarget', 'Ontogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_Threat_target']
+// let ticker_practice = 0; TODO PRACTICE STUFF
+// let currentTrialType_practice = practice_rounds[ticker_practice]; TODO (PRACTICE ROUND?)
 
 function setexperimentalTrajectory() {
-    experimental_trajectory = customRepeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
+    experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
     return experimental_trajectory;
 }
 
@@ -383,27 +354,24 @@ setexperimentalTrajectory();
 console.log(experimental_trajectory);
 let ticker = 0;
 
-
 function getNextTrialType() {
-        let nextTrialType = experimental_trajectory[ticker];
-        ticker = (ticker + 1) % experimental_trajectory.length;
-        currentTrialType = nextTrialType;
+    let nextTrialType = experimental_trajectory[ticker];
+    ticker = (ticker + 1) % experimental_trajectory.length;
+    currentTrialType = nextTrialType;
 }
 
 let currentTrialType = experimental_trajectory[ticker];
 
 function getStimulusDuration() {
-        if (isPractice == true) {
-            stimulusDuration = 3000;
-            for (let i = 0; i < 14; i++);
-            stimulusDuration = stimulusDuration - 100;
-        } else { stimulusDuration = 700 }
-    }
-    
-    // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
-
-    const timeline = [];
-    const instructions = {
+    if (isPractice == true) {
+        stimulusDuration = 3000;
+        for (let i = 0; i < 14; i++);
+        stimulusDuration = stimulusDuration - 100;
+    } else { stimulusDuration = 700 }
+}
+ // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
+const timeline = [];
+const instructions = {
         type: htmlKeyboardResponse,
         stimulus: `
             <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.
@@ -418,48 +386,48 @@ function getStimulusDuration() {
             </div>
         `,
         post_trial_gap: 2000
-    };
+};
 
-    const experimental_grid = {
-        type: htmlKeyboardResponse,
-        on_load: function() {
-            assembleGridImageLocations(currentTrialType);
-            assembleGridArray(imageLocations);
-            isMask = true;
+const experimental_grid = {
+    type: htmlKeyboardResponse,
+    on_load: function() {
+        assembleGridImageLocations(currentTrialType);
+        assembleGridArray(imageLocations);
+        isMask = true;
         }, 
-        choices: [],
-        stimulus: `
+    choices: [],
+    stimulus: `
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
-        stimulus_duration: stimulusDuration,
-        response_ends_trial: false,
-        trial_duration: 500,
-    };
+    stimulus_duration: stimulusDuration,
+    response_ends_trial: false,
+    trial_duration: 500,
+};
 
-    const backmask = {
-        type: htmlKeyboardResponse,
-        on_load: function() {
-            assembleGridImageLocations(currentTrialType);
-            assembleGridArray(imageLocations);
-        }, 
-        choices: ['q', 'p', ' '],
-        stimulus: `
-        <div id="grid-container">
+const backmask = {
+    type: htmlKeyboardResponse,
+    on_load: function() {
+    assembleGridImageLocations(currentTrialType);
+    assembleGridArray(imageLocations);
+    }, 
+    choices: ['q', 'p', ' '],
+    stimulus: `
+    <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
     stimulus_duration: 100,
-        on_finish: function(data) { data.task = currentTrialType;
-            data.correctresponse = correctJudgement;
-            data.targetimagelocation = target_location;
-            data.blocktype = currentBlock;
-            if(jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
-                data.correct = true;
-                if (isPractice == true) {
-                    data.roundtype = 'practice';
-                    feedback = 'Correct!';
-                }
-                data.roundtype = 'experimental';
+    on_finish: function(data) { data.task = currentTrialType;
+        data.correctresponse = correctJudgement;
+        data.targetimagelocation = target_location;
+        data.blocktype = currentBlock;
+        if(jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
+            data.correct = true;
+            if (isPractice == true) {
+                data.roundtype = 'practice';
+                feedback = 'Correct!';
+            }
+            data.roundtype = 'experimental';
                 } else {
                     data.correct = false;
                     if (isPractice == true) {
@@ -473,69 +441,62 @@ function getStimulusDuration() {
         post_trial_gap: 10
     };
 
-    const fixation = {
-        type: htmlKeyboardResponse,
-        stimulus: '+',
-        stimulus_duration: 1500,
-        trial_duration: 1500,
-        response_ends_trial: false,
-        on_start: function() {         
-            getNextTrialType();
-            getStimulusDuration();
-            // console.log(`upcoming trial is ${currentTrialType}`); // debug only
+const fixation = {
+    type: htmlKeyboardResponse,
+    stimulus: '+',
+    stimulus_duration: 1500,
+    trial_duration: 1500,
+    response_ends_trial: false,
+    on_start: function() {         
+        getNextTrialType();
+        getStimulusDuration();
         },
     };
 
-    const feedback_block = {
-        type: htmlKeyboardResponse,
-        stimulus: `${feedback}`,
-        trial_duration: 1000,
-        on_finish: function() {
-            feedback = '';
+const feedback_block = {
+    type: htmlKeyboardResponse,
+    stimulus: `${feedback}`,
+    trial_duration: 1000,
+    on_finish: function() {
+        feedback = '';
         }
-    }
+}
 
-    const debrief_block = {
-        type: htmlKeyboardResponse,
-        on_start: function () {
+const debrief_block = {
+    type: htmlKeyboardResponse,
+    on_start: function () {
             jsPsych.data.get().localSave('csv', `results.csv`);
-        },
-        stimulus: function() {
-            var trials = jsPsych.data.get().filter({roundtype: 'experimental'});
-            var correct_trials = trials.filter({correct: true});
-            var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-            var rt = Math.round(correct_trials.select('rt').mean());
+    },
+    stimulus: function() {
+        var trials = jsPsych.data.get().filter({roundtype: 'experimental'});
+        var correct_trials = trials.filter({correct: true});
+        var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
+        var rt = Math.round(correct_trials.select('rt').mean());
 
-            return `<p>Congrats m8 - you responded correctly with ${accuracy}% of the trials.</p>
+        return `<p>Congrats m8 - you responded correctly with ${accuracy}% of the trials.</p>
                 <p>Your average response time was ${rt}ms.</p>
                 <p>Don't like it? You only have yourself to blame.</p>
                 <p>Press any key to complete the experiment.</p>`;
         },
     };
 
-    const test_procedure = {
-        timeline: [fixation, experimental_grid, backmask],
-        randomize_order: false,
-        repetitions: 2,
-        on_finish: function() {ticker = 0}}
+const test_procedure = {
+    timeline: [fixation, experimental_grid, backmask],
+    randomize_order: false,
+    repetitions: 2,
+    on_finish: function() {ticker = 0}}
 
-    const takeabreak = {
-        type: htmlKeyboardResponse,
-        on_start: function() {
-            numofBreaks = numofBreaks + 1;
-            ticker = 0;
-            // console.log(blockticker);
-            getNextBlock();
-            // console.log(blockticker);
-            // console.log(nextBlock);
-            // console.log(currentBlock);
-            getValidTrialTypes(currentBlock);
-            // console.log(currentBlockDef);
-            updateBlocktrialArray();
-            setexperimentalTrajectory();
-            // console.log(experimental_trajectory)
+const takeabreak = {
+    type: htmlKeyboardResponse,
+    on_start: function() {
+        numofBreaks = numofBreaks + 1;
+        ticker = 0;
+        getNextBlock();
+        getValidTrialTypes(currentBlock);
+        updateBlocktrialArray();
+        setexperimentalTrajectory();
         },
-        stimulus: `
+    stimulus: `
             <p>"Whoa, catch your breath man, shake out those lips!"
             "It's downhill from here, just ${blockorder.length - numofBreaks} blocks more to go!"
             "Now it gets tricky, so listen real good!"
@@ -543,26 +504,28 @@ function getStimulusDuration() {
             <div style='width: 100px;'>
             </div>
         `,
-        post_trial_gap: 2000
-    };
+    post_trial_gap: 2000
+};
 
-
-    const practice_phase = {
+const practice_phase = {
         timeline: [fixation, experimental_grid, backmask, feedback_block],
         randomize_order: true,
         repetitions: 20,
         on_finish: function () {
             isPractice == false;
         }
-    }
+}
 
-    timeline.push(instructions);
-    // timeline.push(practice_phase); implement later
-    timeline.push(test_procedure);
-    timeline.push(takeabreak);
-    timeline.push(test_procedure);
-    timeline.push(takeabreak);
+timeline.push(instructions);
+// timeline.push(practice_phase); implement later
+timeline.push(test_procedure);
+timeline.push(takeabreak);
+timeline.push(test_procedure);
+timeline.push(takeabreak);
+timeline.push(test_procedure);
+timeline.push(takeabreak);
+timeline.push(test_procedure);
 
-    timeline.push(debrief_block);
+timeline.push(debrief_block);
 
-    jsPsych.run(timeline);
+jsPsych.run(timeline);
