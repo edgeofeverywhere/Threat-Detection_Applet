@@ -92,8 +92,6 @@ const jsPsych = initJsPsych({
 // !! MAIN EXPERIMENT HELPERS !!
 function generateImagePaths(currentTrialType) {
     correctJudgement = judgements(currentTrialType);
-    console.log(`location: generateimagepaths, correctJudgement = ${correctJudgement}`);
-    console.log(`location: generateimagepaths, currentTrialType = ${currentTrialType}`);
     imageLocations.length = 0;
     if (isMask === true) {
         for (let i = 0; i < 9; i++) {    
@@ -253,7 +251,7 @@ function assembleGridImageLocations(currentTrialType) {
     }
 }
 
-function addGridItem(imageLocation, position, callback) {
+function addGridItem(imageLocations, position, callback) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
@@ -261,17 +259,17 @@ function addGridItem(imageLocation, position, callback) {
     const image = new Image();
     image.onload = function() {
         // when the image has loaded, set it as the background image of the grid item
-        gridItem.style.backgroundImage = `url(${imageLocation})`;
+        gridItem.style.backgroundImage = `url(${imageLocations})`;
         // gridItem.innerText = position; // debug only
         gridContainer.appendChild(gridItem);
-        console.log(`added grid item ${imageLocation}`); // debug only        
+        // console.log(`added grid item ${imageLocation}`); // debug only        
         // check if this is the last image to load
         if (callback && position === imageLocations.length) {
-            callback(); // call the callback function to indicate that all images have been loaded in case event listener doesn't work
+            callback(); // call the callback function to indicate that all images have been loaded incase DOM event listener doesn't work
         }
     };
     // set the source of the image element to trigger loading
-    image.src = imageLocation;
+    image.src = imageLocations;
 }
 
 function assembleGridArray(imageLocations) {
@@ -280,10 +278,11 @@ function assembleGridArray(imageLocations) {
     const gridReadyEvent = new Event('gridReady');
     let loadedImagesCount = 0;
     // do the loop with the callback for rendering
-    imageLocations.forEach((imageLocation, index) => {
-        addGridItem(imageLocation, index + 1, function() {
+    imageLocations.forEach((imageLocations, index) => {
+        addGridItem(imageLocations, index + 1, function() {
             loadedImagesCount++;
             if (loadedImagesCount === imageLocations.length) {
+                console.log('Wham')
                 gridContainer.dispatchEvent(gridReadyEvent);
             }
         }); 
@@ -316,7 +315,6 @@ function getNextBlock() {
 
 // console.log(`@start, the current block is: ${currentBlock}`)
 function getValidTrialTypes(currentBlock) {
-    console.log('I got called');
         switch(currentBlock) {
             case 'Ontogenetic':
                 currentBlockDef = ['Ontogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_Nonthreat_target', 'Ontogenetic_Distractor_notarget'];
@@ -329,7 +327,7 @@ function getValidTrialTypes(currentBlock) {
 
 // call immediately on bootup
 getValidTrialTypes(currentBlock);
-// !! SET BELOW !!
+// !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
 let blocktrialArray = {
     arrayNames: currentBlockDef,
     arrayNums: [5, 5, 1]
@@ -351,7 +349,6 @@ function setexperimentalTrajectory() {
 }
 
 setexperimentalTrajectory();
-console.log(experimental_trajectory);
 let ticker = 0;
 
 function getNextTrialType() {
