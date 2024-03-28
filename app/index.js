@@ -228,10 +228,33 @@ function judgements(currentTrialType) {
     
     }}
 
-function assembleGridImageLocations(currentTrialType) {
+function addGridItem(imageLocation, position, totalImages, callback) {
+    const gridContainer = document.getElementById('grid-container');
+    const gridItem = document.createElement('div');
+    gridItem.classList.add('grid-item');
+    
+    // Create an image element
+    const image = new Image();
+    image.onload = function() {
+        gridItem.style.backgroundImage = `url(${imageLocation})`;
+        gridContainer.appendChild(gridItem);
+        // Check if all images have been loaded
+        if (callback && position === totalImages) {
+            callback(); // Call the callback function to indicate that all images have been loaded
+        }
+    };
+    // Set the source of the image element to trigger loading
+    image.src = imageLocation;
+}
+
+function assembleGrid(currentTrialType) {
+    const gridContainer = document.getElementById('grid-container');
+    gridContainer.innerHTML = '';
+    const gridReadyEvent = new Event('gridReady');
+    let loadedImagesCount = 0;
+    const imageLocations = generateImagePaths(currentTrialType);
     let target_location = 'N/A';
-    let imageLocations = generateImagePaths(currentTrialType);
-    // switchie
+    // switch statement for special cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
         case 'Ontogenetic_Distractor_Nonthreat_target':
@@ -249,45 +272,48 @@ function assembleGridImageLocations(currentTrialType) {
             console.error('Unknown trial type:', currentTrialType); // should never trigger
             break;
     }
-}
+    const totalImages = imageLocations.length;
+    // array to store promises for image loading
+    const imagePromises = [];
 
-function addGridItem(imageLocations, position, callback) {
-    const gridContainer = document.getElementById('grid-container');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    // Create an image element
-    const image = new Image();
-    image.onload = function() {
-        // when the image has loaded, set it as the background image of the grid item
-        gridItem.style.backgroundImage = `url(${imageLocations})`;
-        // gridItem.innerText = position; // debug only
-        gridContainer.appendChild(gridItem);
-        // console.log(`added grid item ${imageLocation}`); // debug only        
-        // check if this is the last image to load
-        if (callback && position === imageLocations.length) {
-            callback(); // call the callback function to indicate that all images have been loaded incase DOM event listener doesn't work
-        }
-    };
-    // set the source of the image element to trigger loading
-    image.src = imageLocations;
-}
+    // loop through each image location
+    imageLocations.forEach((imageLocation, index) => {
+        const image = new Image();
+        const promise = new Promise((resolve) => {
+            image.onload = function() {
+                loadedImagesCount++;
+                // Call addGridItem for each image
+                addGridItem(imageLocation, index + 1, totalImages, function() {
+                    // Check if all images have been loaded
+                    if (loadedImagesCount === totalImages) {
+                        // Dispatch the gridReadyEvent
+                        gridContainer.dispatchEvent(gridReadyEvent);
+                        console.log('dispatched');
+                        resolve(); // Resolve the promise once all images are loaded
+                    }
+                }); 
+            };
+        });
+        // Set the source of the image element to trigger loading
+        image.src = imageLocation;
+        imagePromises.push(promise);
+    });
 
-function assembleGridArray(imageLocations) {
-    const gridContainer = document.getElementById('grid-container');
-    gridContainer.innerHTML = '';
-    const gridReadyEvent = new Event('gridReady');
-    let loadedImagesCount = 0;
-    // do the loop with the callback for rendering
-    imageLocations.forEach((imageLocations, index) => {
-        addGridItem(imageLocations, index + 1, function() {
-            loadedImagesCount++;
-            if (loadedImagesCount === imageLocations.length) {
-                console.log('Wham')
-                gridContainer.dispatchEvent(gridReadyEvent);
-            }
-        }); 
+    // Add an event listener for the gridReady event
+    gridContainer.addEventListener('gridReady', function() {
+        // Set all grid item background images at once
+        const gridItems = document.querySelectorAll('.grid-item');
+        gridItems.forEach((gridItem, index) => {
+            gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
+        });
+    });
+
+    // Wait for all images to be loaded before resolving
+    Promise.all(imagePromises).then(() => {
+        console.log('All images have been loaded');
     });
 }
+
 
 // !! TRIAL // BLOCK PARAMETERS HERE !!
 let blocktypes = {
@@ -388,8 +414,7 @@ const instructions = {
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_load: function() {
-        assembleGridImageLocations(currentTrialType);
-        assembleGridArray(imageLocations);
+        assembleGrid(currentTrialType);
         isMask = true;
         }, 
     choices: [],
@@ -405,8 +430,7 @@ const experimental_grid = {
 const backmask = {
     type: htmlKeyboardResponse,
     on_load: function() {
-    assembleGridImageLocations(currentTrialType);
-    assembleGridArray(imageLocations);
+    assembleGrid(currentTrialType);
     }, 
     choices: ['q', 'p', ' '],
     stimulus: `
