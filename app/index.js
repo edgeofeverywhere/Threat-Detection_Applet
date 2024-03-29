@@ -69,7 +69,7 @@ function imageDataUrl(image) {
           imageData.data[(y * width + x) * 4 + 3] = 255; // Alpha channel (opaque)
       }
   }
-  context.putImageData(imageData, 0, 0);
+  context.putImageData(imageData, 0, 50);
   // returns embedded
   return canvas.toDataURL('image/png');
 }
@@ -94,7 +94,6 @@ const jsPsych = initJsPsych({
 // !! MAIN EXPERIMENT HELPERS !!
 function generateImagePaths(currentTrialType) {
     correctJudgement = judgements(currentTrialType);
-    imageLocations.length = 0;
     if (isMask === true) {
         for (let i = 0; i < 9; i++) {    
         // shuffle wuffle!
@@ -183,7 +182,7 @@ function generateImagePaths(currentTrialType) {
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -191,7 +190,7 @@ function generateImagePaths(currentTrialType) {
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
-            for (let i = 0; i < 9; i++) {
+            for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -221,7 +220,7 @@ function preloadImageLocations() {
         }
     }
 
-    for (let i = 1; i < 40; i++) {
+    for (let i = 1; i < 100; i++) {
         let valid_distractors = ['Stapler'];
         for (let distractor of valid_distractors) {
             let fullpath_distractor = `${folder_prefixes[0]}${valid_directions[0]}/${distractor}${i}.jpg`;
@@ -256,14 +255,12 @@ function preloadImageLocations() {
 
 
 let imagestopreload = preloadImageLocations();
-
 console.log(`preloaded array == ${imagestopreload}`);
-
 let target_location = 0
 
 function randomizeTargetLocation() {
-    const randomizeTargetLocation = jsPsych.randomization.randomInt(0, 9);
-    return randomizeTargetLocation, target_location;
+    const randomizeTargetLocation = jsPsych.randomization.randomInt(1, 9);
+    return randomizeTargetLocation;
 }
 
 function judgements(currentTrialType) {
@@ -283,84 +280,56 @@ function judgements(currentTrialType) {
     
     }}
 
-function addGridItem(imageLocation, position, totalImages, callback) {
-    const gridContainer = document.getElementById('grid-container');
-    const gridItem = document.createElement('div');
-    gridItem.classList.add('grid-item');
-    const image = new Image();
-    image.onload = function() {
-        gridContainer.appendChild(gridItem);
-        if (callback && position === totalImages) {
-            callback();
-        }
-    };
-    // set the source of the image element to trigger loading ()
-    image.src = imageLocation;
-}
-
-function assembleGrid(currentTrialType) {
-    const gridContainer = document.getElementById('grid-container');
-    gridContainer.innerHTML = '';
-    const gridReadyEvent = new Event('gridReady');
-    let loadedImagesCount = 0;
-    const imageLocations = generateImagePaths(currentTrialType);
-    let target_location = 'N/A';
-    // switch statement for special cases
-    switch (currentTrialType) {
-        case 'Ontogenetic_Distractor_Threat_target':
-        case 'Ontogenetic_Distractor_Nonthreat_target':
-        case 'Phylogenetic_Distractor_Threat_target':
-        case 'Phylogenetic_Distractor_Nonthreat_target':
-            target_location = randomizeTargetLocation();
-            // manipulate the array according to the randomized target location
-            const targetImage = imageLocations.shift();
-            imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array
-            break;
-        case 'Ontogenetic_Distractor_notarget':
-        case 'Phylogenetic_Distractor_notarget':
-            break;
-        default:
-            console.error('Unknown trial type:', currentTrialType); // should never trigger
-            break;
+    function addGridItem(gridContainer, imageLocation) {
+        const gridItem = document.createElement('div');
+        gridItem.classList.add('grid-item');
+        gridContainer.appendChild(gridItem); // Immediately append the grid item
     }
-    const totalImages = imageLocations.length;
-    // array to store promises for image loading
-    const imagePromises = [];
-
-    // loop through each image location
-    imageLocations.forEach((imageLocation, index) => {
-        const image = new Image();
-        const promise = new Promise((resolve) => {
-            image.onload = function() {
-                loadedImagesCount++;
-                // Call addGridItem for each image
-                addGridItem(imageLocation, index + 1, totalImages, function() {
-                    // Check if all images have been loaded
-                    if (loadedImagesCount === totalImages) {
-                        // Dispatch the gridReadyEvent
-                        gridContainer.dispatchEvent(gridReadyEvent);
-                        console.log('dispatched');
-                        resolve(); // Resolve the promise once all images are loaded
-                    }
-                }); 
-            };
+    
+    function assembleGrid(currentTrialType) {
+        const gridContainer = document.getElementById('grid-container');
+        gridContainer.innerHTML = '';
+        const gridReadyEvent = new Event('gridReady');
+        imageLocations.length = 0;
+        imageLocations = generateImagePaths(currentTrialType);
+        let target_location = 'N/A';
+    
+        // switch statement for special cases
+        switch (currentTrialType) {
+            case 'Ontogenetic_Distractor_Threat_target':
+            case 'Ontogenetic_Distractor_Nonthreat_target':
+            case 'Phylogenetic_Distractor_Threat_target':
+            case 'Phylogenetic_Distractor_Nonthreat_target':
+                target_location = randomizeTargetLocation();
+                const targetImage = imageLocations.splice(0, 1); // Remove the first element
+                imageLocations.splice(target_location - 1, 0, targetImage); // Inject the target objects back into array
+                console.log(`current trial type = ${currentTrialType}`)
+                break;
+            case 'Ontogenetic_Distractor_notarget':
+            case 'Phylogenetic_Distractor_notarget':
+                console.log(`current trial type = ${currentTrialType}`)
+                break;
+            default:
+                console.error('Unknown trial type:', currentTrialType); // should never trigger
+                break;
+        }
+    
+        // Add grid items
+        imageLocations.forEach((imageLocation) => {
+            console.log('foreach');
+            addGridItem(gridContainer, imageLocation);
         });
-        image.src = imageLocation;
-        imagePromises.push(promise);
-    });
-
-    gridContainer.addEventListener('gridReady', function() {
+    
+        // dispatch the gridReadyEvent
+        console.log('dispatched');
+        gridContainer.dispatchEvent(gridReadyEvent);
+    
         const gridItems = document.querySelectorAll('.grid-item');
         gridItems.forEach((gridItem, index) => {
             gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
         });
-    });
-
-    // Wait for all images to be loaded before resolving
-    Promise.all(imagePromises).then(() => {
-        console.log('All images have been loaded');
-    });
-}
+    }
+    
 
 
 // !! TRIAL // BLOCK PARAMETERS HERE !!
@@ -376,6 +345,7 @@ function setBlockOrder() {
 }
 
 setBlockOrder();
+
 let currentBlock = blockorder[0]
 // console.log(blockorder); // debug only
 let blockticker = 0;
@@ -419,17 +389,19 @@ updateBlocktrialArray();
 
 function setexperimentalTrajectory() {
     experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
+    console.log(`the experimental_trajectory is ${experimental_trajectory}`)
     return experimental_trajectory;
 }
 
 setexperimentalTrajectory();
+
 let ticker = 0;
 
 function getNextTrialType() {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
-}
+ }
 
 let currentTrialType = experimental_trajectory[ticker];
 
@@ -540,6 +512,7 @@ const experimental_grid = {
     on_load: function() {
         assembleGrid(currentTrialType);
         isMask = true;
+        console.log(`the experimental_trajectory is ${experimental_trajectory}`);
         }, 
     choices: [],
     stimulus: `
@@ -638,7 +611,7 @@ const takeabreak = {
         numofBreaks = numofBreaks + 1;
         ticker = 0;
         getNextBlock();
-        getValidTrialTypes(currentBlock);
+        getValidTrialTypes();
         updateBlocktrialArray();
         setexperimentalTrajectory();
         },
