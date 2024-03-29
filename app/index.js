@@ -5,6 +5,7 @@ import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import 'ndarray';
 import 'ndarray-ops';
 import gaussian from 'gaussian'; 
+import PreloadPlugin from '@jspsych/plugin-preload';
 
 // globals 
 let imageLocations = [];
@@ -45,6 +46,7 @@ function generateNoisyGreyscaleImage(width, height) {
     }
     return image;
 }
+
 
 function imageDataUrl(image) {
   const width = image[0].length;
@@ -123,7 +125,7 @@ function generateImagePaths(currentTrialType) {
     }
 
     function targetrngPhone() {
-        const targetrngPhone = jsPsych.randomization.randomInt(1, 31);
+        const targetrngPhone = jsPsych.randomization.randomInt(1, 30);
         return targetrngPhone;
     }
 
@@ -145,39 +147,39 @@ function generateImagePaths(currentTrialType) {
     // switch and cases
     switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
-            imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();        
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Ontogenetic_Distractor_Nonthreat_target':
-            imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.bmp`);
+            imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_Nonthreat_target':
-            imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_Threat_target':
-            imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.bmp`);
+            imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
@@ -185,7 +187,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
@@ -193,7 +195,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.bmp`);
+                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         default:
@@ -203,6 +205,59 @@ function generateImagePaths(currentTrialType) {
     }
     return imageLocations;
 }
+
+function preloadImageLocations() {
+    let valid_directions = ['Normal', 'Reverse'];
+    let folder_prefixes = ['/img/Guns_White_', 'img/Spiders_White_'];
+    let imagestopreload = [];
+
+    for (let i = 1; i < 100; i++) {
+        let valid_distractors = ['bf'];
+        for (let distractor of valid_distractors) {
+            let fullpath_distractor = `${folder_prefixes[1]}${valid_directions[0]}/${distractor}${i}.jpg`;
+            imagestopreload.push(fullpath_distractor);
+            let fullpath_distractor_reverse = `${folder_prefixes[1]}${valid_directions[1]}/${distractor}${i}.jpg`;
+            imagestopreload.push(fullpath_distractor_reverse);
+        }
+    }
+
+    for (let i = 1; i < 40; i++) {
+        let valid_distractors = ['Stapler'];
+        for (let distractor of valid_distractors) {
+            let fullpath_distractor = `${folder_prefixes[0]}${valid_directions[0]}/${distractor}${i}.jpg`;
+            imagestopreload.push(fullpath_distractor);
+            let fullpath_distractor_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${distractor}${i}.jpg`;
+            imagestopreload.push(fullpath_distractor_reverse);
+        }
+    }
+
+    for (let i = 1; i < 30; i++) {
+        let valid_targets = ['s', 'b'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[1]}${valid_directions[0]}/${target}${i}.jpg`;
+            imagestopreload.push(targetpath);
+            let targetpath_reverse = `${folder_prefixes[1]}${valid_directions[1]}/${target}${i}.jpg`;
+            imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 31; i++) {
+        let valid_targets = ['Phone'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[0]}${valid_directions[0]}/${target}${i}.jpg`;
+            imagestopreload.push(targetpath);
+            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}${i}.jpg`;
+            imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    return imagestopreload;
+}
+
+
+let imagestopreload = preloadImageLocations();
+
+console.log(`preloaded array == ${imagestopreload}`);
 
 let target_location = 0
 
@@ -232,13 +287,9 @@ function addGridItem(imageLocation, position, totalImages, callback) {
     const gridContainer = document.getElementById('grid-container');
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
-    
-    // create an image element
     const image = new Image();
     image.onload = function() {
-        gridItem.style.backgroundImage = `url(${imageLocation})`;
         gridContainer.appendChild(gridItem);
-        // Check if all images have been loaded
         if (callback && position === totalImages) {
             callback();
         }
@@ -294,14 +345,11 @@ function assembleGrid(currentTrialType) {
                 }); 
             };
         });
-        // Set the source of the image element to trigger loading
         image.src = imageLocation;
         imagePromises.push(promise);
     });
 
-    // Add an event listener for the gridReady event
     gridContainer.addEventListener('gridReady', function() {
-        // Set all grid item background images at once
         const gridItems = document.querySelectorAll('.grid-item');
         gridItems.forEach((gridItem, index) => {
             gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
@@ -394,6 +442,11 @@ function getStimulusDuration() {
 }
  // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
 const timeline = [];
+const preloader = {
+type: PreloadPlugin,
+auto_preload: true,
+images: imagestopreload,
+};
 const instructions = {
         type: htmlKeyboardResponse,
         stimulus: `
@@ -431,7 +484,6 @@ const instructions2 = {
         </div>
     `,
     choices:["q"],
-    post_trial_gap: 2000
 };
 
 const instructions3 = {
@@ -466,7 +518,6 @@ const instructions5 = {
         <div style='width: 100px;'>
         </div>
     `,
-    post_trial_gap: 2000
 };
 
 const preexperimentalinstructions = {
@@ -511,6 +562,7 @@ const backmask = {
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
     stimulus_duration: 100,
+    trial_duration: 2500,
     on_finish: function(data) { data.task = currentTrialType;
         data.correctresponse = correctJudgement;
         data.targetimagelocation = target_location;
@@ -538,8 +590,8 @@ const backmask = {
 const fixation = {
     type: htmlKeyboardResponse,
     stimulus: '+',
-    stimulus_duration: 1500,
-    trial_duration: 1500,
+    stimulus_duration: 500,
+    trial_duration: 500,
     response_ends_trial: false,
     on_start: function() {         
         getNextTrialType();
@@ -554,7 +606,7 @@ const feedback_block = {
     on_finish: function() {
         feedback = '';
         }
-}
+};
 
 const debrief_block = {
     type: htmlKeyboardResponse,
@@ -578,7 +630,7 @@ const test_procedure = {
     timeline: [fixation, experimental_grid, backmask],
     randomize_order: false,
     repetitions: 22,
-    on_finish: function() {ticker = 0}}
+    on_finish: function() {ticker = 0}};
 
 const takeabreak = {
     type: htmlKeyboardResponse,
@@ -608,9 +660,10 @@ const practice_phase = {
         on_finish: function () {
             isPractice == false;
         }
-}
+};
 
 timeline.push(instructions);
+timeline.push(preloader);
 timeline.push(instructions1);
 timeline.push(instructions2);
 timeline.push(instructions3);
