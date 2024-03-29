@@ -233,17 +233,17 @@ function addGridItem(imageLocation, position, totalImages, callback) {
     const gridItem = document.createElement('div');
     gridItem.classList.add('grid-item');
     
-    // Create an image element
+    // create an image element
     const image = new Image();
     image.onload = function() {
         gridItem.style.backgroundImage = `url(${imageLocation})`;
         gridContainer.appendChild(gridItem);
         // Check if all images have been loaded
         if (callback && position === totalImages) {
-            callback(); // Call the callback function to indicate that all images have been loaded
+            callback();
         }
     };
-    // Set the source of the image element to trigger loading
+    // set the source of the image element to trigger loading ()
     image.src = imageLocation;
 }
 
@@ -356,7 +356,7 @@ getValidTrialTypes(currentBlock);
 // !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
 let blocktrialArray = {
     arrayNames: currentBlockDef,
-    arrayNums: [5, 5, 1]
+    arrayNums: [20, 20, 2]
 };
 
 function updateBlocktrialArray() {
@@ -399,16 +399,89 @@ const instructions = {
         stimulus: `
             <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.
             </p>
-            <p>You will be shown a grid of nine images. One of these objects might be different in nature from the rest.</p>
-            <p>If the object that is different from the rest is "threatening" in character, press the 'q' button on the keyboard.</p>
-            <p>If the object that is different from the rest is "nonthreatening" in character, press the 'p' button on the keyboard.</p>
-            <p>If all the objects are of the same character, press the spacebar.</p>
-            <p>We will separate this out into a longer sequence later with pictures and a practice session, but for now, press any key to continue</p>
-            </p>
+            <p>'+'</p.
+            <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, the above "fixation cross," as your reference. Press any key to continue.</p>
+            <p>Press any key to continue.</p>
             <div style='width: 100px;'>
             </div>
         `,
-        post_trial_gap: 2000
+};
+
+const instructions1 = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+        <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
+        </p>
+
+        <p>After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
+        <p>Press any key to continue.</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+};
+
+
+const instructions2 = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+        <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
+        <img src = "/img/Prototypes/knife.png"</img>
+        <p>Press the 'q' key to continue.</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+    choices:["q"],
+    post_trial_gap: 2000
+};
+
+const instructions3 = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+    <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
+    <img src = "/img/Prototypes/kitten.png"</img>
+        <p>Press the 'p' key to continue.</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+    choices:["p"],
+};
+
+const instructions4 = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+    <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
+        <p>Press the spacebar to continue.</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+    choices:[" "],
+};
+
+const instructions5 = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+    <p>We will now commence a brief practice phase of 15 trials, where you will not be evaluated for performance.</p>
+    <p>The time of presentation for the grid will decrease as the practice period progresses.</p>
+        <p>Press any key to continue.</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+    post_trial_gap: 2000
+};
+
+const preexperimentalinstructions = {
+    type: htmlKeyboardResponse,
+    stimulus: `
+    <p>We are now ready to begin the main experiment!</p>
+    <p>Note that if you do not render a response within a two and a half second window after the grid disappears, the experiment will continue to progress regardless.</p>
+    <p>You will be given a break after completing a set of 40 trials in a row. </p>
+    <p>You will be given three breaks in total.</p>
+    <p>Once all these sets have been completed, you will respond to a brief post-experimental questionnaire!</p>
+    <p>When you are ready to begin, press any key to continue!</p>
+        <div style='width: 100px;'>
+        </div>
+    `,
+    post_trial_gap: 2000
 };
 
 const experimental_grid = {
@@ -496,7 +569,7 @@ const debrief_block = {
 
         return `<p>Congrats m8 - you responded correctly with ${accuracy}% of the trials.</p>
                 <p>Your average response time was ${rt}ms.</p>
-                <p>Don't like it? You only have yourself to blame.</p>
+                <p>Drop us the .csv you get!</p>
                 <p>Press any key to complete the experiment.</p>`;
         },
     };
@@ -504,7 +577,7 @@ const debrief_block = {
 const test_procedure = {
     timeline: [fixation, experimental_grid, backmask],
     randomize_order: false,
-    repetitions: 2,
+    repetitions: 22,
     on_finish: function() {ticker = 0}}
 
 const takeabreak = {
@@ -519,8 +592,8 @@ const takeabreak = {
         },
     stimulus: `
             <p>"Whoa, catch your breath man, shake out those lips!"
-            "It's downhill from here, just ${blockorder.length - numofBreaks} blocks more to go!"
-            "Now it gets tricky, so listen real good!"
+            "It's downhill from here, just ${function(){4 - numofBreaks}} blocks more to go!"
+            "Now it gets tricky, so listen REAL good!"
             </p>
             <div style='width: 100px;'>
             </div>
@@ -538,7 +611,13 @@ const practice_phase = {
 }
 
 timeline.push(instructions);
+timeline.push(instructions1);
+timeline.push(instructions2);
+timeline.push(instructions3);
+timeline.push(instructions4);
+timeline.push(instructions5);
 // timeline.push(practice_phase); implement later
+timeline.push(preexperimentalinstructions);
 timeline.push(test_procedure);
 timeline.push(takeabreak);
 timeline.push(test_procedure);
