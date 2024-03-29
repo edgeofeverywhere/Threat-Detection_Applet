@@ -286,7 +286,7 @@ function judgements(currentTrialType) {
         gridContainer.appendChild(gridItem); // Immediately append the grid item
     }
     
-    function assembleGrid(currentTrialType) {
+    function assembleGrid() {
         const gridContainer = document.getElementById('grid-container');
         gridContainer.innerHTML = '';
         const gridReadyEvent = new Event('gridReady');
@@ -402,6 +402,7 @@ function getNextTrialType() {
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
     console.log(`I was called smh.`)
+    return currentTrialType;
  }
 
 let currentTrialType = experimental_trajectory[ticker];
@@ -528,7 +529,7 @@ const experimental_grid = {
 const backmask = {
     type: htmlKeyboardResponse,
     on_load: function() {
-    assembleGrid(currentTrialType);
+    assembleGrid();
     }, 
     choices: ['q', 'p', ' '],
     stimulus: `
