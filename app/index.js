@@ -397,7 +397,7 @@ setexperimentalTrajectory();
 
 let ticker = 0;
 
-function getNextTrialType() {
+function getNextTrialType(currentTrialType) {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
@@ -567,7 +567,7 @@ const fixation = {
     trial_duration: 500,
     response_ends_trial: false,
     on_start: function() {         
-        getNextTrialType();
+        getNextTrialType(currentTrialType);
         getStimulusDuration();
         },
     };
