@@ -396,16 +396,16 @@ function setexperimentalTrajectory() {
 setexperimentalTrajectory();
 
 let ticker = 0;
+let currentTrialType;
 
 function getNextTrialType() {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
-    console.log(`I was called smh.`)
+    console.log(`expermiental_trajectory length:` + experimental_trajectory.length)
     return currentTrialType;
  }
 
-let currentTrialType = experimental_trajectory[ticker];
 
 function getStimulusDuration() {
     if (isPractice == true) {
@@ -569,7 +569,7 @@ const fixation = {
     trial_duration: 500,
     response_ends_trial: false,
     on_start: function() {         
-        getNextTrialType(currentTrialType);
+        getNextTrialType();
         getStimulusDuration();
         },
     };
@@ -605,7 +605,7 @@ const test_procedure = {
     timeline: [fixation, experimental_grid, backmask],
     randomize_order: false,
     repetitions: 22,
-    on_finish: function() {ticker = 0}};
+}
 
 const takeabreak = {
     type: htmlKeyboardResponse,
