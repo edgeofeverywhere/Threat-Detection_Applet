@@ -397,10 +397,11 @@ setexperimentalTrajectory();
 
 let ticker = 0;
 
-function getNextTrialType(currentTrialType) {
+function getNextTrialType() {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
+    console.log(`I was called smh.`)
  }
 
 let currentTrialType = experimental_trajectory[ticker];
@@ -617,7 +618,7 @@ const takeabreak = {
         },
     stimulus: `
             <p>"Whoa, catch your breath man, shake out those lips!"
-            "It's downhill from here, just ${function(){4 - numofBreaks}} blocks more to go!"
+            "It's downhill from here, just ${4 - numofBreaks} blocks more to go!"
             "Now it gets tricky, so listen REAL good!"
             </p>
             <div style='width: 100px;'>
