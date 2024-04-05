@@ -133,6 +133,16 @@ function generateImagePaths(currentTrialType) {
         return targetrngSpider;
     }
 
+    function targetrngKitten() {
+        const targetrngKitten = jsPsych.randomization.randomInt(1, 42);
+        return targetrngKitten;
+    }
+
+    function targetrngKnife() {
+        const targetrngKitten = jsPsych.randomization.randomInt(1, 42);
+        return targetrngKnife;
+    }
+
     function innerforscopeRNG() {
         randomDirection();
         distractortrng();
@@ -207,7 +217,7 @@ function generateImagePaths(currentTrialType) {
 
 function preloadImageLocations() {
     let valid_directions = ['Normal', 'Reverse'];
-    let folder_prefixes = ['/img/Guns_White_', 'img/Spiders_White_'];
+    let folder_prefixes = ['/img/Guns_White_', 'img/Spiders_White_', 'img/Practice_'];
     let imagestopreload = [];
 
     for (let i = 1; i < 100; i++) {
@@ -247,6 +257,26 @@ function preloadImageLocations() {
             imagestopreload.push(targetpath);
             let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}${i}.jpg`;
             imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 43; i++) {
+        let valid_targets = ['kitten'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}${valid_directions[0]}/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+ //           let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+ //           imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 12; i++) {
+        let valid_targets = ['knife'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}${valid_directions[0]}/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+//            imagestopreload.push(targetpath_reverse);
         }
     }
 
@@ -402,7 +432,7 @@ function getNextTrialType() {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
-    console.log(`expermiental_trajectory length:` + experimental_trajectory.length)
+    console.log(`experimental_trajectory length:` + experimental_trajectory.length)
     return currentTrialType;
  }
 
@@ -421,6 +451,7 @@ type: PreloadPlugin,
 auto_preload: true,
 images: imagestopreload,
 };
+
 const instructions = {
         type: htmlKeyboardResponse,
         stimulus: `
