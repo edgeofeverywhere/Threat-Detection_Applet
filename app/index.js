@@ -11,12 +11,13 @@ import PreloadPlugin from '@jspsych/plugin-preload';
 let imageLocations = [];
 let isMask = false;
 let correctJudgement = '';
-let feedback = '';
 let isPractice = true; // until practice procedure finalized - do not switch
-let stimulusDuration = 500
+let stimulusDuration = 3000
 let numofBreaks = 1; // temporary pokerap easteregg
 let currentBlockDef = [];
+let feedback = '';
 let blockorder = [];
+let practicelocation = 0;
 let experimental_trajectory = [];
 
 //!! MASK DRAWING MATH !!
@@ -143,70 +144,85 @@ function generateImagePaths(currentTrialType) {
         return targetrngKnife;
     }
 
+    function targetrngRulers() {
+        const targetrngRulers = jsPsych.randomization.randomInt(1, 12);
+        return targetrngRulers;
+    }
+
+    function targetrngSpoons() {
+        const targetrngSpoons = jsPsych.randomization.randomInt(1, 12);
+        return targetrngSpoons;
+    }
+
+    function targetrngTigers() {
+        const targetrngTigers = jsPsych.randomization.randomInt(1, 12);
+        return targetrngTigers;
+    }
+
+    function targetrngBunnies() {
+        const targetrngBunnies = jsPsych.randomization.randomInt(1, 12);
+        return targetrngBunnies;
+    }
+
     function innerforscopeRNG() {
         randomDirection();
         distractortrng();
     }
+
     // call them all/state them once!
     const randomDir = randomDirection();
     const targetRngBird = targetrngBird();
     const targetRngGun = targetrngGun();
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
+    const targetRngKitten = targetrngKitten();
+    const targetRngTigers = targetrngTigers();
+    const targetRngKnife = targetrngKnife();
+    const targetRngRulers = targetrngRulers();
+    const targetRngBunnies = targetrngBunnies();
+
     // switch and cases
 
     if (isPractice == true) {
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
-                imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
+                imageLocations.push(`/img/Practice_Normal/knife_${targetRngKnife}.jpg`);
                 for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();        
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                    let spoony = targetrngSpoons();
+                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Ontogenetic_Distractor_Nonthreat_target':
-                imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.jpg`);
+                imageLocations.push(`/img/Practice_Normal/Ruler_${targetRngRulers}.jpg`);
                 for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                    let spoony = targetrngSpoons();
+                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_Nonthreat_target':
-                imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.jpg`);
+                imageLocations.push(`/img/Practice_Normal/Bunny_${targetRngBunnies}.jpg`);
                 for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                    let kitten = targetRngKitten();
+                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_Threat_target':
-                imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.jpg`);
+                imageLocations.push(`/img/Practice_Normal/tiger_${targetRngTigers}.jpg`);
                 for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                    let kitten = targetrngKitten();
+                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Ontogenetic_Distractor_notarget':
-                for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                for (let i = 0; i < 9; i++) {
+                    let spoony = targetrngSpoons();
+                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_notarget':
-                for (let i = 0; i < 8; i++) {
-                    const randomDir = randomDirection();
-                    const distractorTrng = distractortrng();
-                    innerforscopeRNG();
-                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                for (let i = 0; i < 9; i++) {
+                    let kitten = targetrngKitten();
+                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             default:
@@ -251,7 +267,7 @@ function generateImagePaths(currentTrialType) {
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -259,7 +275,7 @@ function generateImagePaths(currentTrialType) {
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 9; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
@@ -322,7 +338,7 @@ function preloadImageLocations() {
     for (let i = 1; i < 43; i++) {
         let valid_targets = ['kitten'];
         for (let target of valid_targets) {
-            let targetpath = `${folder_prefixes[2]}${valid_directions[0]}/${target}_${i}.jpg`;
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
  //           let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
  //           imagestopreload.push(targetpath_reverse);
@@ -332,7 +348,46 @@ function preloadImageLocations() {
     for (let i = 1; i < 12; i++) {
         let valid_targets = ['knife'];
         for (let target of valid_targets) {
-            let targetpath = `${folder_prefixes[2]}${valid_directions[0]}/${target}_${i}.jpg`;
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+//            imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 29; i++) {
+        let valid_targets = ['Bunny'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+//            imagestopreload.push(targetpath_reverse);
+        }
+    }
+    for (let i = 1; i < 19; i++) {
+        let valid_targets = ['Ruler'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+//            imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 32; i++) {
+        let valid_targets = ['Spoon'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
+            imagestopreload.push(targetpath);
+//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
+//            imagestopreload.push(targetpath_reverse);
+        }
+    }
+
+    for (let i = 1; i < 14; i++) {
+        let valid_targets = ['Tiger'];
+        for (let target of valid_targets) {
+            let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
 //            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
 //            imagestopreload.push(targetpath_reverse);
@@ -507,14 +562,17 @@ function getNextTrialType() {
  }
 
 
-function getStimulusDuration() {
-    if (isPractice == true) {
-        stimulusDuration = 3000;
-        for (let i = 0; i < 14; i++);
-        stimulusDuration = stimulusDuration - 100;
-    } else { stimulusDuration = 700 }
+ function getStimulusDuration() {
+    if (isPractice) {
+        stimulusDuration = 3000 - (100 * practicelocation);
+        return stimulusDuration;
+    } else {
+        stimulusDuration = 700;
+        return stimulusDuration;
+    }
 }
- // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
+
+// !! EXPERIMENT TIMELINE + EVENTS BELOW !!
 const timeline = [];
 const preloader = {
 type: PreloadPlugin,
@@ -587,7 +645,7 @@ const instructions4 = {
 const instructions5 = {
     type: htmlKeyboardResponse,
     on_load: function(){
-        console.log(`state of ispractice = ${isPractice}`);
+    console.log(`state of ispractice = ${isPractice}`);
     },
     stimulus: `
     <p>We will now commence a brief practice phase of 15 trials, where you will not be evaluated for performance.</p>
@@ -632,7 +690,7 @@ const experimental_grid = {
     </div>    `, 
     stimulus_duration: stimulusDuration,
     response_ends_trial: false,
-    trial_duration: 500,
+    trial_duration: stimulusDuration,
 };
 
 const backmask = {
@@ -655,6 +713,7 @@ const backmask = {
             data.correct = true;
             if (isPractice == true) {
                 data.roundtype = 'practice';
+                console.log("right & practice");
                 feedback = 'Correct!';
             }
             data.roundtype = 'experimental';
@@ -662,9 +721,11 @@ const backmask = {
                     data.correct = false;
                     if (isPractice == true) {
                         data.roundtype = 'practice';
-                        feedback = 'Incorrect!'; 
+                        console.log("wrong & practice");
+                        feedback = 'Incorrect!';
                 } data.roundtype = 'experimental';
             }
+            practicelocation = practicelocation + 1;
                 jsPsych.data.get().json();
                 isMask = false;
             },
@@ -680,16 +741,21 @@ const fixation = {
     on_start: function() {         
         getNextTrialType();
         getStimulusDuration();
+        console.log(`stimulus duration : ${stimulusDuration} & practicelocation = ${practicelocation}`);
         },
     };
 
 const feedback_block = {
     type: htmlKeyboardResponse,
-    stimulus: `${feedback}`,
-    trial_duration: 1000,
+    stimulus: function() {
+        return `
+            <div>"${feedback}"</div>
+        `},
     on_finish: function() {
-        feedback = '';
-        }
+        console.log(`feedbackblock`);
+        console.log(`feedback = ${feedback}`)
+        },
+    response_ends_trial: true,
 };
 
 const debrief_block = {
@@ -741,9 +807,6 @@ const practice_phase = {
         timeline: [fixation, experimental_grid, backmask, feedback_block],
         randomize_order: true,
         repetitions: 20,
-        on_finish: function () {
-            isPractice == false;
-        }
 };
 
 timeline.push(instructions);
@@ -753,7 +816,8 @@ timeline.push(instructions2);
 timeline.push(instructions3);
 timeline.push(instructions4);
 timeline.push(instructions5);
-timeline.push(practice_phase); // implement later
+timeline.push(fixation);
+timeline.push(practice_phase);
 timeline.push(preexperimentalinstructions);
 timeline.push(test_procedure);
 timeline.push(takeabreak);
