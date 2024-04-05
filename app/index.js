@@ -12,7 +12,7 @@ let imageLocations = [];
 let isMask = false;
 let correctJudgement = '';
 let feedback = '';
-let isPractice = false; // until practice procedure finalized - do not switch
+let isPractice = true; // until practice procedure finalized - do not switch
 let stimulusDuration = 500
 let numofBreaks = 1; // temporary pokerap easteregg
 let currentBlockDef = [];
@@ -139,7 +139,7 @@ function generateImagePaths(currentTrialType) {
     }
 
     function targetrngKnife() {
-        const targetrngKitten = jsPsych.randomization.randomInt(1, 42);
+        const targetrngKnife = jsPsych.randomization.randomInt(1, 12);
         return targetrngKnife;
     }
 
@@ -154,7 +154,66 @@ function generateImagePaths(currentTrialType) {
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
     // switch and cases
-    switch (currentTrialType) {
+
+    if (isPractice == true) {
+        switch (currentTrialType) {
+            case 'Ontogenetic_Distractor_Threat_target':
+                imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();        
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                }
+                break;
+            case 'Ontogenetic_Distractor_Nonthreat_target':
+                imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.jpg`);
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                }
+                break;
+            case 'Phylogenetic_Distractor_Nonthreat_target':
+                imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.jpg`);
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                }
+                break;
+            case 'Phylogenetic_Distractor_Threat_target':
+                imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.jpg`);
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                }
+                break;
+            case 'Ontogenetic_Distractor_notarget':
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                }
+                break;
+            case 'Phylogenetic_Distractor_notarget':
+                for (let i = 0; i < 8; i++) {
+                    const randomDir = randomDirection();
+                    const distractorTrng = distractortrng();
+                    innerforscopeRNG();
+                    imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                }
+                break;
+            default:
+                console.error('Unknown trial type:', currentTrialType);
+                break;
+    }} else 
+    { switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
             imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
             for (let i = 0; i < 8; i++) {
@@ -213,7 +272,7 @@ function generateImagePaths(currentTrialType) {
     }
     }
     return imageLocations;
-}
+}}
 
 function preloadImageLocations() {
     let valid_directions = ['Normal', 'Reverse'];
@@ -402,9 +461,15 @@ function getValidTrialTypes(currentBlock) {
 // call immediately on bootup
 getValidTrialTypes(currentBlock);
 // !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
+
 let blocktrialArray = {
     arrayNames: currentBlockDef,
     arrayNums: [20, 20, 2]
+};
+
+let blocktrialArray_practice = {
+    arrayNames: currentBlockDef,
+    arrayNums: [9, 9, 2]
 };
 
 function updateBlocktrialArray() {
@@ -417,11 +482,16 @@ updateBlocktrialArray();
 // let ticker_practice = 0; TODO PRACTICE STUFF
 // let currentTrialType_practice = practice_rounds[ticker_practice]; TODO (PRACTICE ROUND?)
 
-function setexperimentalTrajectory() {
-    experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
+function setexperimentalTrajectory() { if (isPractice == true) {
+    experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray_practice.arrayNames, blocktrialArray_practice.arrayNums);
     console.log(`the experimental_trajectory is ${experimental_trajectory}`)
     return experimental_trajectory;
 }
+    else {
+    experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
+    console.log(`the experimental_trajectory is ${experimental_trajectory}`)
+    return experimental_trajectory;
+}}
 
 setexperimentalTrajectory();
 
@@ -516,6 +586,9 @@ const instructions4 = {
 
 const instructions5 = {
     type: htmlKeyboardResponse,
+    on_load: function(){
+        console.log(`state of ispractice = ${isPractice}`);
+    },
     stimulus: `
     <p>We will now commence a brief practice phase of 15 trials, where you will not be evaluated for performance.</p>
     <p>The time of presentation for the grid will decrease as the practice period progresses.</p>
@@ -526,6 +599,11 @@ const instructions5 = {
 };
 
 const preexperimentalinstructions = {
+on_load: function() {
+isPractice = false;
+setexperimentalTrajectory();
+console.log(`state of ispractice = ${isPractice}`);
+    },
     type: htmlKeyboardResponse,
     stimulus: `
     <p>We are now ready to begin the main experiment!</p>
@@ -675,7 +753,7 @@ timeline.push(instructions2);
 timeline.push(instructions3);
 timeline.push(instructions4);
 timeline.push(instructions5);
-// timeline.push(practice_phase); implement later
+timeline.push(practice_phase); // implement later
 timeline.push(preexperimentalinstructions);
 timeline.push(test_procedure);
 timeline.push(takeabreak);
