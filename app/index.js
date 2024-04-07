@@ -385,9 +385,12 @@ function preloadImageLocations() {
         }
     }
 
+    imagestopreload.push('/img/Prototypes/kitten.png')
+    imagestopreload.push('/img/Prototypes/knife.png')
+
+
     return imagestopreload;
 }
-
 
 let imagestopreload = preloadImageLocations();
 console.log(`preloaded array == ${imagestopreload}`);
@@ -425,9 +428,7 @@ function judgements(currentTrialType) {
         image.src = imageLocation;
         // add load event listener to each image
         image.addEventListener('load', () => {
-            // increment the count of loaded images
             loadedImagesCount++;
-            // dispatch gridReadyEvent
             if (loadedImagesCount === 9) {
                 gridContainer.dispatchEvent(gridReadyEvent);
             }
@@ -454,8 +455,8 @@ function judgements(currentTrialType) {
             case 'Phylogenetic_Distractor_Threat_target':
             case 'Phylogenetic_Distractor_Nonthreat_target':
                 target_location = randomizeTargetLocation();
-                const targetImage = imageLocations.splice(0, 1); // Remove the first element
-                imageLocations.splice(target_location - 1, 0, targetImage); // Inject the target objects back into array
+                const targetImage = imageLocations.splice(0, 1); // remove the first element
+                imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array @ the location number we specified earlier (-1 because of zero indexing)
                 console.log(`current trial type = ${currentTrialType}`);
                 break;
             case 'Ontogenetic_Distractor_notarget':
@@ -465,7 +466,7 @@ function judgements(currentTrialType) {
                 console.error('Unknown trial type:', currentTrialType); // should never trigger
                 break;
         }
-    
+
         imageLocations.forEach((imageLocation) => {
             console.log('foreach');
             addGridItem(gridContainer, imageLocation);
@@ -477,9 +478,7 @@ function judgements(currentTrialType) {
     
         return target_location;
     }
-    
-    
-    
+
 // !! TRIAL // BLOCK PARAMETERS HERE !!
 let blocktypes = {
     arrayNames: ['Ontogenetic', 'Phylogenetic'],
@@ -581,11 +580,8 @@ function youPressSomething(data) {
 function backmaskLength() {
 if (alreadyAnswered == true) {
     backmaskDuration = 150;
-    return backmaskDuration;
 } else {backmaskDuration = 2500;
-    return backmaskDuration;
-}   
-}
+}}
 
 
 // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
@@ -599,13 +595,12 @@ images: imagestopreload,
 const instructions = {
         type: htmlKeyboardResponse,
         stimulus: `
-            <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.
-            </p>
-            <p>+</p>
-            <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
-            <div style='width: 100px;'>
-            </div>
-        `,
+        <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
+        <div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
+          <p style="font-size: 3em;">+</p>
+        </div>
+        <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
+                `,
 };
 
 const instructions1 = {
@@ -625,11 +620,12 @@ const instructions1 = {
 const instructions2 = {
     type: htmlKeyboardResponse,
     stimulus: `
-        <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
-        <img src = "/img/Prototypes/knife.png"</img>
-        <p>Press the 'q' key to continue.</p>
-        <div style='width: 100px;'>
-        </div>
+    <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
+    <div style="display: flex; justify-content: center;">
+      <img src="/img/Prototypes/knife.png" style="max-width: 40%; height: auto;">
+    </div>
+    <p>Press the 'q' key to continue.</p>
+    <div style="margin-top: calc(5vh + 20px);"></div>    
     `,
     choices:["q"],
 };
@@ -675,7 +671,6 @@ const preexperimentalinstructions = {
 on_load: function() {
 isPractice = false;
 setexperimentalTrajectory();
-console.log(`state of ispractice = ${isPractice}`);
     },
     type: htmlKeyboardResponse,
     stimulus: `
@@ -690,6 +685,11 @@ console.log(`state of ispractice = ${isPractice}`);
     `,
     post_trial_gap: 2000
 };
+
+// Q for J ---->
+// we want, in const backmask to add the logged data.rt (if it exists) from experimental grid to the backmask data.rt if a subject doesn't respond within the earlier window -- is this possible to fetch or can it not be easily returned with current class membership?
+// also it seems like the properties of the objects aren't updating depending on the state of global lets - tried wrapping in functions to return values of global lets alreadyanswered
+// and backmaskduration but this didn't seem to work - do we have to write helpers externally for both that reference those globals instead?? or is there some other method that lets us work around this?
 
 const experimental_grid = {
     type: htmlKeyboardResponse,
@@ -710,10 +710,10 @@ const experimental_grid = {
         console.log(`currenttargetlocation = ${target_location}`);
         pressedornot = youPressSomething(data);
         if (!pressedornot) {
-            console.log(`no key was pressed. pressedornot = ${pressedornot}`);
+            console.log(`no key was pressed.`);
             alreadyAnswered = false;
         } else {
-            console.log(`a key was pressed. pressedornot = ${pressedornot}`);
+            console.log(`a key was pressed.`);
             data.task = currentTrialType;
             data.respondedwhen = 'ongrid';
             data.correctresponse = correctJudgement;
@@ -735,11 +735,13 @@ const experimental_grid = {
                 data.roundtype = 'experimental';}
             }
             practicelocation = practicelocation + 1;
+            data.stimulus = 'image grid';
             jsPsych.data.get().json();
             alreadyAnswered = true;
         }
-    backmaskLength(backmaskDuration);
+    backmaskLength();
     console.log(`upcoming mask trial length ${backmaskDuration}`);
+    return backmaskDuration, alreadyAnswered;
     }
 }
 const backmask = {
@@ -754,9 +756,9 @@ const backmask = {
     <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `,
-    response_ends_trial: function() {if (alreadyAnswered == true) {return false;} else {return true;}}, 
+    response_ends_trial: !alreadyAnswered,
     stimulus_duration: 150,
-    trial_duration: backmaskDuration,
+    trial_duration: function() {backmaskDuration; return;},
     on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
         data.correctresponse = correctJudgement;
@@ -775,10 +777,10 @@ const backmask = {
                     if (isPractice == true) {
                         data.roundtype = 'practice';
                         feedback = 'Incorrect!';
-
                 } else {data.roundtype = 'experimental';}
             }
-            practicelocation = practicelocation + 1;
+            data.stimulus = 'mask grid';
+            practicelocation = practicelocation + 1; // it will be updated every trial (practice or not, but since it only matters in the first practice round, no need to wrap it with a conditional)
                 jsPsych.data.get().json();
                 isMask = false;
     }},
@@ -787,7 +789,10 @@ const backmask = {
 
 const fixation = {
     type: htmlKeyboardResponse,
-    stimulus: '+',
+    stimulus: `<div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
+    <p style="font-size: 3em;">+</p>
+  </div>
+`,
     stimulus_duration: 500,
     trial_duration: 500,
     response_ends_trial: false,
