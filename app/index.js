@@ -11,17 +11,20 @@ import PreloadPlugin from '@jspsych/plugin-preload';
 let imageLocations = [];
 let isMask = false;
 let correctJudgement = '';
-let isPractice = true; // until practice procedure finalized - do not switch
-let stimulusDuration = 3000
-let numofBreaks = 1; // temporary pokerap easteregg
+let loadedImagesCount = 0;
+let isPractice = true;
+let stimulusDuration = 3000;
+let backmaskDuration = 150;
+let numofBreaks = 1;
 let currentBlockDef = [];
 let feedback = '';
 let blockorder = [];
 let practicelocation = 0;
+let pressedornot = false;
+let alreadyAnswered = false;
 let experimental_trajectory = [];
 
 //!! MASK DRAWING MATH !!
-
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -94,6 +97,8 @@ const jsPsych = initJsPsych({
 
 // !! MAIN EXPERIMENT HELPERS !!
 function generateImagePaths(currentTrialType) {
+    imageLocations = [];
+    loadedImagesCount = 0;
     correctJudgement = judgements(currentTrialType);
     if (isMask === true) {
         for (let i = 0; i < 9; i++) {    
@@ -169,20 +174,18 @@ function generateImagePaths(currentTrialType) {
         distractortrng();
     }
 
-    // call them all/state them once!
+    // call them all/state them once (if outside switch scope)
     const randomDir = randomDirection();
     const targetRngBird = targetrngBird();
     const targetRngGun = targetrngGun();
     const targetRngPhone = targetrngPhone();
     const targetRngSpider = targetrngSpider();
-    const targetRngKitten = targetrngKitten();
     const targetRngTigers = targetrngTigers();
     const targetRngKnife = targetrngKnife();
     const targetRngRulers = targetrngRulers();
     const targetRngBunnies = targetrngBunnies();
 
     // switch and cases
-
     if (isPractice == true) {
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
@@ -202,7 +205,7 @@ function generateImagePaths(currentTrialType) {
             case 'Phylogenetic_Distractor_Nonthreat_target':
                 imageLocations.push(`/img/Practice_Normal/Bunny_${targetRngBunnies}.jpg`);
                 for (let i = 0; i < 8; i++) {
-                    let kitten = targetRngKitten();
+                    let kitten = targetrngKitten();
                     imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
@@ -335,62 +338,50 @@ function preloadImageLocations() {
         }
     }
 
-    for (let i = 1; i < 43; i++) {
+    for (let i = 1; i < 44; i++) {
         let valid_targets = ['kitten'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
- //           let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
- //           imagestopreload.push(targetpath_reverse);
         }
     }
 
-    for (let i = 1; i < 12; i++) {
+    for (let i = 1; i < 13; i++) {
         let valid_targets = ['knife'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
-//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
-//            imagestopreload.push(targetpath_reverse);
         }
     }
 
-    for (let i = 1; i < 29; i++) {
+    for (let i = 1; i < 30; i++) {
         let valid_targets = ['Bunny'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
-//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
-//            imagestopreload.push(targetpath_reverse);
         }
     }
-    for (let i = 1; i < 19; i++) {
+    for (let i = 1; i < 20; i++) {
         let valid_targets = ['Ruler'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
-//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
-//            imagestopreload.push(targetpath_reverse);
         }
     }
 
-    for (let i = 1; i < 32; i++) {
+    for (let i = 1; i < 33; i++) {
         let valid_targets = ['Spoon'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
-//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
-//            imagestopreload.push(targetpath_reverse);
         }
     }
 
-    for (let i = 1; i < 14; i++) {
+    for (let i = 1; i < 15; i++) {
         let valid_targets = ['Tiger'];
         for (let target of valid_targets) {
             let targetpath = `${folder_prefixes[2]}Normal/${target}_${i}.jpg`;
             imagestopreload.push(targetpath);
-//            let targetpath_reverse = `${folder_prefixes[0]}${valid_directions[1]}/${target}_${i}.jpg`;
-//            imagestopreload.push(targetpath_reverse);
         }
     }
 
@@ -425,18 +416,36 @@ function judgements(currentTrialType) {
     }}
 
     function addGridItem(gridContainer, imageLocation) {
+        const gridReadyEvent = new Event('gridReady');
         const gridItem = document.createElement('div');
         gridItem.classList.add('grid-item');
-        gridContainer.appendChild(gridItem); // Immediately append the grid item
+        gridContainer.appendChild(gridItem); 
+    
+        const image = new Image();
+        image.src = imageLocation;
+        // add load event listener to each image
+        image.addEventListener('load', () => {
+            // increment the count of loaded images
+            loadedImagesCount++;
+            // dispatch gridReadyEvent
+            if (loadedImagesCount === 9) {
+                gridContainer.dispatchEvent(gridReadyEvent);
+            }
+        });
+    }
+    
+    function setGridItemsBackgroundImages() {
+        const gridItems = document.querySelectorAll('.grid-item');
+        gridItems.forEach((gridItem, index) => {
+            gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
+        });
     }
     
     function assembleGrid() {
         const gridContainer = document.getElementById('grid-container');
         gridContainer.innerHTML = '';
-        const gridReadyEvent = new Event('gridReady');
-        imageLocations.length = 0;
-        imageLocations = generateImagePaths(currentTrialType);
-        let target_location = 'N/A';
+        let imageLocations = generateImagePaths(currentTrialType); // Initialize imageLocations here
+        let target_location = 0;
     
         // switch statement for special cases
         switch (currentTrialType) {
@@ -447,35 +456,30 @@ function judgements(currentTrialType) {
                 target_location = randomizeTargetLocation();
                 const targetImage = imageLocations.splice(0, 1); // Remove the first element
                 imageLocations.splice(target_location - 1, 0, targetImage); // Inject the target objects back into array
-                console.log(`current trial type = ${currentTrialType}`)
+                console.log(`current trial type = ${currentTrialType}`);
                 break;
             case 'Ontogenetic_Distractor_notarget':
             case 'Phylogenetic_Distractor_notarget':
-                console.log(`current trial type = ${currentTrialType}`)
                 break;
             default:
                 console.error('Unknown trial type:', currentTrialType); // should never trigger
                 break;
         }
     
-        // Add grid items
         imageLocations.forEach((imageLocation) => {
             console.log('foreach');
             addGridItem(gridContainer, imageLocation);
         });
     
-        // dispatch the gridReadyEvent
-        console.log('dispatched');
-        gridContainer.dispatchEvent(gridReadyEvent);
-    
-        const gridItems = document.querySelectorAll('.grid-item');
-        gridItems.forEach((gridItem, index) => {
-            gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
+        gridContainer.addEventListener('gridReady', () => {
+            setGridItemsBackgroundImages();
         });
+    
+        return target_location;
     }
     
-
-
+    
+    
 // !! TRIAL // BLOCK PARAMETERS HERE !!
 let blocktypes = {
     arrayNames: ['Ontogenetic', 'Phylogenetic'],
@@ -512,30 +516,28 @@ function getValidTrialTypes(currentBlock) {
                 return currentBlockDef;
         }
     }
+let practiceBlockDef = ['Ontogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_Nonthreat_target', 'Ontogenetic_Distractor_notarget', 'Phylogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_notarget']
 
 // call immediately on bootup
 getValidTrialTypes(currentBlock);
-// !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
 
+// !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
 let blocktrialArray = {
     arrayNames: currentBlockDef,
     arrayNums: [20, 20, 2]
 };
 
 let blocktrialArray_practice = {
-    arrayNames: currentBlockDef,
-    arrayNums: [9, 9, 2]
+    arrayNames: practiceBlockDef,
+    arrayNums: [4, 4, 2, 4, 4, 2]
 };
 
 function updateBlocktrialArray() {
     blocktrialArray.arrayNames = currentBlockDef;
 }
 
+// call on startup to set the first trial in place
 updateBlocktrialArray();
-
-// todo - do we have these fixed??? const practice_rounds = ['Ontogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_notarget', 'Ontogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_Threat_target']
-// let ticker_practice = 0; TODO PRACTICE STUFF
-// let currentTrialType_practice = practice_rounds[ticker_practice]; TODO (PRACTICE ROUND?)
 
 function setexperimentalTrajectory() { if (isPractice == true) {
     experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray_practice.arrayNames, blocktrialArray_practice.arrayNums);
@@ -562,8 +564,8 @@ function getNextTrialType() {
  }
 
 
- function getStimulusDuration() {
-    if (isPractice) {
+function getStimulusDuration() {
+    if (isPractice == true) {
         stimulusDuration = 3000 - (100 * practicelocation);
         return stimulusDuration;
     } else {
@@ -571,6 +573,20 @@ function getNextTrialType() {
         return stimulusDuration;
     }
 }
+
+function youPressSomething(data) {
+    return data.response !== null;
+}
+
+function backmaskLength() {
+if (alreadyAnswered == true) {
+    backmaskDuration = 150;
+    return backmaskDuration;
+} else {backmaskDuration = 2500;
+    return backmaskDuration;
+}   
+}
+
 
 // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
 const timeline = [];
@@ -585,9 +601,8 @@ const instructions = {
         stimulus: `
             <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.
             </p>
-            <p>'+'</p.
-            <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, the above "fixation cross," as your reference. Press any key to continue.</p>
-            <p>Press any key to continue.</p>
+            <p>+</p>
+            <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
             <div style='width: 100px;'>
             </div>
         `,
@@ -648,8 +663,8 @@ const instructions5 = {
     console.log(`state of ispractice = ${isPractice}`);
     },
     stimulus: `
-    <p>We will now commence a brief practice phase of 15 trials, where you will not be evaluated for performance.</p>
-    <p>The time of presentation for the grid will decrease as the practice period progresses.</p>
+    <p>We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
+    <p>The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
         <p>Press any key to continue.</p>
         <div style='width: 100px;'>
         </div>
@@ -681,55 +696,93 @@ const experimental_grid = {
     on_load: function() {
         assembleGrid(currentTrialType);
         isMask = true;
-        console.log(`the experimental_trajectory is ${experimental_trajectory}`);
-        }, 
-    choices: [],
+    }, 
+    choices: ['q', 'p', ' '],
     stimulus: `
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
     stimulus_duration: stimulusDuration,
-    response_ends_trial: false,
     trial_duration: stimulusDuration,
-};
-
+    response_ends_trial: true,
+    on_finish: function(data) {
+        console.log(`the nature of the response: ${data.response}`);
+        console.log(`currenttargetlocation = ${target_location}`);
+        pressedornot = youPressSomething(data);
+        if (!pressedornot) {
+            console.log(`no key was pressed. pressedornot = ${pressedornot}`);
+            alreadyAnswered = false;
+        } else {
+            console.log(`a key was pressed. pressedornot = ${pressedornot}`);
+            data.task = currentTrialType;
+            data.respondedwhen = 'ongrid';
+            data.correctresponse = correctJudgement;
+            data.targetimagelocation = target_location;
+            data.blocktype = currentBlock;
+            if (jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
+                data.correct = true;
+                if (isPractice) {
+                    data.roundtype = 'practice';
+                    feedback = 'Correct!';
+                } else {
+                data.roundtype = 'experimental';}
+            } else {
+                data.correct = false;
+                if (isPractice) {
+                    data.roundtype = 'practice';
+                    feedback = 'Incorrect!';
+                } else {
+                data.roundtype = 'experimental';}
+            }
+            practicelocation = practicelocation + 1;
+            jsPsych.data.get().json();
+            alreadyAnswered = true;
+        }
+    backmaskLength(backmaskDuration);
+    console.log(`upcoming mask trial length ${backmaskDuration}`);
+    }
+}
 const backmask = {
     type: htmlKeyboardResponse,
     on_load: function() {
+    console.log(`already answered = ${alreadyAnswered}`);
+    console.log(`this trial is supposed to last ${backmaskDuration} ms`);
     assembleGrid();
     }, 
     choices: ['q', 'p', ' '],
     stimulus: `
     <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
-    </div>    `, 
-    stimulus_duration: 100,
-    trial_duration: 2500,
-    on_finish: function(data) { data.task = currentTrialType;
+    </div>    `,
+    response_ends_trial: function() {if (alreadyAnswered == true) {return false;} else {return true;}}, 
+    stimulus_duration: 150,
+    trial_duration: backmaskDuration,
+    on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
+        data.respondedwhen = 'onmask';
         data.correctresponse = correctJudgement;
+        console.log(`currenttargetlocation = ${target_location}`);
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
         if(jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
             data.correct = true;
             if (isPractice == true) {
                 data.roundtype = 'practice';
-                console.log("right & practice");
                 feedback = 'Correct!';
-            }
-            data.roundtype = 'experimental';
+            } else {
+            data.roundtype = 'experimental';}
                 } else {
                     data.correct = false;
                     if (isPractice == true) {
                         data.roundtype = 'practice';
-                        console.log("wrong & practice");
                         feedback = 'Incorrect!';
-                } data.roundtype = 'experimental';
+
+                } else {data.roundtype = 'experimental';}
             }
             practicelocation = practicelocation + 1;
                 jsPsych.data.get().json();
                 isMask = false;
-            },
-        post_trial_gap: 10
+    }},
+        post_trial_gap: 200
     };
 
 const fixation = {
@@ -749,11 +802,12 @@ const feedback_block = {
     type: htmlKeyboardResponse,
     stimulus: function() {
         return `
-            <div>"${feedback}"</div>
+            <div>${feedback}</div>
         `},
+    stimulus_duration: 1000,
+    trial_duration: 1000,
+    
     on_finish: function() {
-        console.log(`feedbackblock`);
-        console.log(`feedback = ${feedback}`)
         },
     response_ends_trial: true,
 };
@@ -769,7 +823,7 @@ const debrief_block = {
         var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
         var rt = Math.round(correct_trials.select('rt').mean());
 
-        return `<p>Congrats m8 - you responded correctly with ${accuracy}% of the trials.</p>
+        return `<p>Congrats m9 - you responded correctly with ${accuracy}% of the trials.</p>
                 <p>Your average response time was ${rt}ms.</p>
                 <p>Drop us the .csv you get!</p>
                 <p>Press any key to complete the experiment.</p>`;
@@ -779,7 +833,7 @@ const debrief_block = {
 const test_procedure = {
     timeline: [fixation, experimental_grid, backmask],
     randomize_order: false,
-    repetitions: 22,
+    repetitions: 42,
 }
 
 const takeabreak = {
@@ -792,14 +846,14 @@ const takeabreak = {
         updateBlocktrialArray();
         setexperimentalTrajectory();
         },
-    stimulus: `
+    stimulus: function() {return `
             <p>"Whoa, catch your breath man, shake out those lips!"
             "It's downhill from here, just ${4 - numofBreaks} blocks more to go!"
             "Now it gets tricky, so listen REAL good!"
             </p>
             <div style='width: 100px;'>
             </div>
-        `,
+        `},
     post_trial_gap: 2000
 };
 
