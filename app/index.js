@@ -756,11 +756,14 @@ const backmask = {
     <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `,
-    response_ends_trial: !alreadyAnswered,
+    response_ends_trial: function () {!alreadyAnswered; return !alreadyAnswered},
     stimulus_duration: 150,
-    trial_duration: function() {backmaskDuration; return;},
+    trial_duration: function() {backmaskDuration; return backmaskDuration;},
     on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
+        console.log(`pre-add = ${data.rt}`);
+        data.rt = data.rt + stimulusDuration;
+        console.log(`post-add = ${data.rt}`);
         data.correctresponse = correctJudgement;
         console.log(`currenttargetlocation = ${target_location}`);
         data.targetimagelocation = target_location;
