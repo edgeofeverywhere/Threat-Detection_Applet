@@ -83,7 +83,7 @@ function imageDataUrl(image) {
 const maskImages = [];
 const width = 338;
 const height = 210;
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 26; i++) {
     const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
     const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
     maskImages.push(RenderedMasks);
@@ -394,7 +394,6 @@ function preloadImageLocations() {
 }
 
 let imagestopreload = preloadImageLocations();
-console.log(`preloaded array == ${imagestopreload}`);
 
 function randomizeTargetLocation() {
     const randomizeTargetLocation = jsPsych.randomization.randomInt(1, 9);
@@ -457,7 +456,6 @@ function judgements(currentTrialType) {
             case 'Phylogenetic_Distractor_Nonthreat_target':
                 const targetImage = imageLocations.splice(0, 1); // remove the first element
                 imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array @ the location number we specified earlier (-1 because of zero indexing)
-                console.log(`current trial type = ${currentTrialType}`);
                 break;
             case 'Ontogenetic_Distractor_notarget':
             case 'Phylogenetic_Distractor_notarget':
@@ -493,7 +491,6 @@ function setBlockOrder() {
 setBlockOrder();
 
 let currentBlock = blockorder[0]
-// console.log(blockorder); // debug only
 let blockticker = 0;
 
 function getNextBlock() {
@@ -502,8 +499,6 @@ function getNextBlock() {
     currentBlock = nextBlock;
     return currentBlock;
 }
-
-console.log(`starting currentblock = ${currentBlock}`);
 
 function getValidTrialTypes(currentBlock) {
         switch(currentBlock) {
@@ -541,12 +536,10 @@ updateBlocktrialArray();
 
 function setexperimentalTrajectory() { if (isPractice == true) {
     experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray_practice.arrayNames, blocktrialArray_practice.arrayNums);
-    console.log(`the experimental_trajectory is ${experimental_trajectory}`)
     return experimental_trajectory;
 }
     else {
     experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray.arrayNames, blocktrialArray.arrayNums);
-    console.log(`the experimental_trajectory is ${experimental_trajectory}`)
     return experimental_trajectory;
 }}
 
@@ -559,7 +552,6 @@ function getNextTrialType() {
     let nextTrialType = experimental_trajectory[ticker];
     ticker = (ticker + 1) % experimental_trajectory.length;
     currentTrialType = nextTrialType;
-    console.log(`experimental_trajectory length:` + experimental_trajectory.length)
     return currentTrialType;
  }
 
@@ -595,6 +587,7 @@ images: imagestopreload,
 
 const instructions = {
         type: htmlKeyboardResponse,
+        on_finish: function() {data.stimulus = 'instruction screen 0';} ,
         stimulus: `
         <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
         <div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
@@ -606,6 +599,7 @@ const instructions = {
 
 const instructions1 = {
     type: htmlKeyboardResponse,
+    on_finish: function() {data.stimulus = 'instruction screen 1';} ,
     stimulus: `
         <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
         </p>
@@ -619,6 +613,7 @@ const instructions1 = {
 
 
 const instructions2 = {
+    on_finish: function() {data.stimulus = 'instruction screen 2';} ,
     type: htmlKeyboardResponse,
     stimulus: `
     <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
@@ -633,6 +628,7 @@ const instructions2 = {
 
 const instructions3 = {
     type: htmlKeyboardResponse,
+    on_finish: function() {data.stimulus = 'instruction screen 3';},
     stimulus: `
     <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
     <div style="display: flex; justify-content: center;">
@@ -647,6 +643,7 @@ const instructions3 = {
 
 const instructions4 = {
     type: htmlKeyboardResponse,
+    on_finish: function() {data.stimulus = 'instruction screen 4';} ,
     stimulus: `
     <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
         <p>Press the spacebar to continue.</p>
@@ -658,9 +655,7 @@ const instructions4 = {
 
 const instructions5 = {
     type: htmlKeyboardResponse,
-    on_load: function(){
-    console.log(`state of ispractice = ${isPractice}`);
-    },
+    on_finish: function() {data.stimulus = 'instruction screen 5';},
     stimulus: `
     <p>We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
     <p>The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
@@ -686,6 +681,7 @@ setexperimentalTrajectory();
         <div style='width: 100px;'>
         </div>
     `,
+    on_finish: function() {data.stimulus = 'pre-experimental_briefing';} ,
     post_trial_gap: 2000
 };
 
@@ -704,9 +700,6 @@ const experimental_grid = {
     trial_duration: function() {stimulusDuration; return stimulusDuration;},
     response_ends_trial: true,
     on_finish: function(data) {
-        console.log(`the nature of the response: ${data.response}`);
-        console.log(`bs: $`);
-        console.log(`currenttargetlocation = ${target_location}`);
         pressedornot = youPressSomething(data);
         if (!pressedornot) {
             console.log(`no key was pressed.`);
@@ -744,16 +737,12 @@ const experimental_grid = {
             alreadyAnswered = true;
         }
     backmaskLength();
-    console.log(`upcoming mask trial length ${backmaskDuration}`);
     return backmaskDuration, alreadyAnswered;
     }
 }
 const backmask = {
     type: htmlKeyboardResponse,
     on_load: function() {
-    console.log(`already answered = ${alreadyAnswered}`);
-    console.log(`this is ${currentBlockDef}`);
-    console.log(`this trial is supposed to last ${backmaskDuration} ms`);
     assembleGrid();
     }, 
     choices: ['q', 'p', ' '],
@@ -768,16 +757,13 @@ const backmask = {
         data.respondedwhen = 'onmask';
         data.rt = data.rt + stimulusDuration;
         data.correctresponse = correctJudgement;
-        console.log(`currenttargetlocation = ${target_location}`);
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
         if(jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
-            console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
             data.correct = true;
             if (isPractice == true) {
                 data.roundtype = 'practice';
                 feedback = 'Correct!';
-                console.log(`${feedback}`);
             } else {
             data.roundtype = 'experimental';}
                 } else {
@@ -785,7 +771,6 @@ const backmask = {
                     if (isPractice == true) {
                         data.roundtype = 'practice';
                         feedback = 'Incorrect!';
-                        console.log(`${feedback}`);
                 } else {data.roundtype = 'experimental';}
             }
             data.stimulus = 'mask grid';
@@ -808,8 +793,8 @@ const fixation = {
     on_start: function() {         
         getNextTrialType();
         getStimulusDuration();
-        console.log(`stimulus duration : ${stimulusDuration} & practicelocation = ${practicelocation}`);
         },
+        on_finish: function() {data.stimulus = 'fixation cross';} ,
     };
 
 const feedback_block = {
@@ -820,9 +805,7 @@ const feedback_block = {
         `},
     stimulus_duration: 1000,
     trial_duration: 1000,
-    
-    on_finish: function() {
-        },
+    on_finish: function() {data.stimulus = 'feedback screen';},
     response_ends_trial: true,
 };
 
@@ -868,6 +851,7 @@ const takeabreak = {
             <div style='width: 100px;'>
             </div>
         `},
+        on_finish: function() {data.stimulus = 'break screen';},
     post_trial_gap: 2000
 };
 
