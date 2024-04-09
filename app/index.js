@@ -22,10 +22,12 @@ let target_location = 0;
 let blockorder = [];
 let practicelocation = 0;
 let pressedornot = false;
+let speedcondition = [];
 let alreadyAnswered = false;
 let experimental_trajectory = [];
 
 //!! MASK DRAWING MATH !!
+// shuffler
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -33,7 +35,8 @@ function shuffleArray(array) {
     }
 }
 
-function generateNoisyGreyscaleImage(width, height) {
+// generate the masks as arrays with a gaussian distribution
+function generateNoiseMasks(width, height) {
     var image = new Array(height).fill(null).map(() => new Array(width).fill(0));
     // new greyscale image array
     for (let y = 0; y < height; y++) {
@@ -52,8 +55,8 @@ function generateNoisyGreyscaleImage(width, height) {
     return image;
 }
 
-
-function imageDataUrl(image) {
+// function to draw the images + return URLS to canvas to populate the experimental array
+function randommaskUrl(image) {
   const width = image[0].length;
   const height = image.length;
   // makes a canvas element to display the mask
@@ -83,13 +86,15 @@ function imageDataUrl(image) {
 const maskImages = [];
 const width = 338;
 const height = 210;
+
+// ergo, masks are truly random every time! no silly tricks.
 for (let i = 0; i < 26; i++) {
-    const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
-    const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
+    const noisyGreyscaleImage = generateNoiseMasks(width, height);
+    const RenderedMasks = randommaskUrl(noisyGreyscaleImage);
     maskImages.push(RenderedMasks);
 }
 
-// !! JSPSYCH INITIALIZE !!
+// !! JSPSYCH INITIALIZE (we rely on inherited methods so we do it early.) !!
 const jsPsych = initJsPsych({
     on_finish: function() {
         jsPsych.data.get().localSave('csv', 'results.csv');
@@ -97,13 +102,14 @@ const jsPsych = initJsPsych({
 });
 
 // !! MAIN EXPERIMENT HELPERS !!
+// main randomizer function (that randomizes per-trial stuff)
 function generateImagePaths(currentTrialType) {
     imageLocations = [];
     loadedImagesCount = 0;
     correctJudgement = judgements(currentTrialType);
     if (isMask === true) {
         for (let i = 0; i < 9; i++) {    
-        // shuffle wuffle!
+    // shuffle wuffle! (cute phrase, doesn't mean anything)
             shuffleArray(maskImages);
             imageLocations.push(maskImages.slice(0, 1));
             }
@@ -175,19 +181,13 @@ function generateImagePaths(currentTrialType) {
         distractortrng();
     }
 
-    // call them all/state them once (if outside switch scope)
-    const randomDir = randomDirection();
-    const targetRngBird = targetrngBird();
-    const targetRngGun = targetrngGun();
-    const targetRngPhone = targetrngPhone();
-    const targetRngSpider = targetrngSpider();
-    const targetRngTigers = targetrngTigers();
-    const targetRngKnife = targetrngKnife();
-    const targetRngRulers = targetrngRulers();
-    const targetRngBunnies = targetrngBunnies();
-
-    // switch and cases
+    // stimuli rng - practice phase of experiment
     if (isPractice == true) {
+        const targetRngTigers = targetrngTigers();
+        const targetRngKnife = targetrngKnife();
+        const targetRngRulers = targetrngRulers();
+        const targetRngBunnies = targetrngBunnies();
+    
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
                 imageLocations.push(`/img/Practice_Normal/knife_${targetRngKnife}.jpg`);
@@ -233,7 +233,15 @@ function generateImagePaths(currentTrialType) {
                 console.error('Unknown trial type:', currentTrialType);
                 break;
     }} else 
-    { switch (currentTrialType) {
+    { 
+        // main experiment stimuli rng
+        const randomDir = randomDirection();
+        const targetRngBird = targetrngBird();
+        const targetRngGun = targetrngGun();
+        const targetRngPhone = targetrngPhone();
+        const targetRngSpider = targetrngSpider();
+
+        switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
             imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
             for (let i = 0; i < 8; i++) {
@@ -294,6 +302,7 @@ function generateImagePaths(currentTrialType) {
     return imageLocations;
 }}
 
+// function that gives the paths for jsPsych to preload and download - you could probably abstract this further to cut down on verbosity even more.
 function preloadImageLocations() {
     let valid_directions = ['Normal', 'Reverse'];
     let folder_prefixes = ['/img/Guns_White_', 'img/Spiders_White_', 'img/Practice_'];
@@ -389,17 +398,19 @@ function preloadImageLocations() {
     imagestopreload.push('/img/Prototypes/kitten.png')
     imagestopreload.push('/img/Prototypes/knife.png')
 
-
     return imagestopreload;
 }
 
-let imagestopreload = preloadImageLocations();
+// generate the huge list in advance to call it later
+const imagestopreload = preloadImageLocations();
 
+// this is called later to randomize the location of the discrepant object in the grid
 function randomizeTargetLocation() {
     const randomizeTargetLocation = jsPsych.randomization.randomInt(1, 9);
     return randomizeTargetLocation;
 }
 
+// determine which answers are right and wrong!
 function judgements(currentTrialType) {
     switch(currentTrialType) {
     case 'Ontogenetic_Distractor_Threat_target':
@@ -416,14 +427,14 @@ function judgements(currentTrialType) {
         return correctJudgement;
     
     }}
-
-    function addGridItem(gridContainer, imageLocation) {
-        const gridReadyEvent = new Event('gridReady');
-        const gridItem = document.createElement('div');
-        gridItem.classList.add('grid-item');
-        gridContainer.appendChild(gridItem); 
+// function that adds html divisors to the trial in the proper position 
+function addGridItem(gridContainer, imageLocation) {
+    const gridReadyEvent = new Event('gridReady');
+    const gridItem = document.createElement('div');
+    gridItem.classList.add('grid-item');
+    gridContainer.appendChild(gridItem); 
     
-        const image = new Image();
+    const image = new Image();
         image.src = imageLocation;
         // add load event listener to each image
         image.addEventListener('load', () => {
@@ -433,22 +444,23 @@ function judgements(currentTrialType) {
             }
         });
     }
-    
-    function setGridItemsBackgroundImages() {
-        const gridItems = document.querySelectorAll('.grid-item');
+
+// function to quickly change all the images of the html elements when all 9 are loaded.
+function setGridItemsBackgroundImages() {
+    const gridItems = document.querySelectorAll('.grid-item');
         gridItems.forEach((gridItem, index) => {
             gridItem.style.backgroundImage = `url(${imageLocations[index]})`;
         });
-    }
-    
-    function assembleGrid() {
+}
+
+// the main function responsible for the grid assembly
+function assembleGrid() {
         const gridContainer = document.getElementById('grid-container');
         gridContainer.innerHTML = '';
         let imageLocations = generateImagePaths(currentTrialType); // Initialize imageLocations here
         target_location = 0;
         target_location = randomizeTargetLocation();
-
-        // switch statement for special cases
+    // vary grid off of trial type
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
             case 'Ontogenetic_Distractor_Nonthreat_target':
@@ -477,19 +489,21 @@ function judgements(currentTrialType) {
     }
 
 // !! TRIAL // BLOCK PARAMETERS HERE !!
+// ! block order (onto vs. phylo) helpers !
 let blocktypes = {
     arrayNames: ['Ontogenetic', 'Phylogenetic'],
     arrayNums: [2, 2]
 }
 
-// set the blockorder a priori - no funny bidness
 function setBlockOrder() {
     blockorder = jsPsych.randomization.repeat(blocktypes.arrayNames, blocktypes.arrayNums);
     return blockorder;
 }
 
+// set block order on startup
 setBlockOrder();
 
+// block-related tickers + location-keepers for experiment timeline
 let currentBlock = blockorder[0]
 let blockticker = 0;
 
@@ -500,6 +514,7 @@ function getNextBlock() {
     return currentBlock;
 }
 
+// the valid types of trials for each block type
 function getValidTrialTypes(currentBlock) {
         switch(currentBlock) {
             case 'Ontogenetic':
@@ -512,10 +527,11 @@ function getValidTrialTypes(currentBlock) {
     }
 let practiceBlockDef = ['Ontogenetic_Distractor_Threat_target', 'Ontogenetic_Distractor_Nonthreat_target', 'Ontogenetic_Distractor_notarget', 'Phylogenetic_Distractor_Threat_target', 'Phylogenetic_Distractor_Nonthreat_target', 'Phylogenetic_Distractor_notarget']
 
-// call immediately on bootup
+// call immediately on bootup (practice overrides so it doesn't matter but didn't want a callback since I can avoid)
 getValidTrialTypes(currentBlock);
 
-// !! SET Distribution of # of threats, # nonthreats, # of notargets BELOW !!
+// !! WITHIN-BLOCK HELPERS !!
+// ! Distribution of # of threats, # nonthreats, # of notargets per block !
 let blocktrialArray = {
     arrayNames: currentBlockDef,
     arrayNums: [20, 20, 2]
@@ -526,6 +542,7 @@ let blocktrialArray_practice = {
     arrayNums: [4, 4, 2, 4, 4, 2]
 };
 
+
 function updateBlocktrialArray() {
     currentBlockDef = blocktrialArray.arrayNames;
     return currentBlockDef;
@@ -534,6 +551,7 @@ function updateBlocktrialArray() {
 // call on startup to set the first trial in place
 updateBlocktrialArray();
 
+// sets the trajectory of an experimental block (what the order is for each condition)
 function setexperimentalTrajectory() { if (isPractice == true) {
     experimental_trajectory = jsPsych.randomization.repeat(blocktrialArray_practice.arrayNames, blocktrialArray_practice.arrayNums);
     return experimental_trajectory;
@@ -543,8 +561,10 @@ function setexperimentalTrajectory() { if (isPractice == true) {
     return experimental_trajectory;
 }}
 
+// call on startup to get the first group in place
 setexperimentalTrajectory();
 
+// trial-related tickers + location-keepers for experiment timeline
 let ticker = 0;
 let currentTrialType;
 
@@ -555,27 +575,52 @@ function getNextTrialType() {
     return currentTrialType;
  }
 
+// very silly logic check you could handle in the callback property of the jspsych method but i put it here.
+function youPressSomething(data) {
+    return data.response !== null;
+}
 
+// !! SPEED/TIME Manipulations !!
+let speedconditionDef = ['400', '800'];
+let speedconditionArray = {
+    arrayNames: speedconditionDef,
+    arrayNums: [2, 2]
+}
+// names similar and functions to before
+function setspeedCondition() {
+    speedcondition = jsPsych.randomization.repeat(speedconditionArray.arrayNames, speedconditionArray.arrayNums);
+    return speedcondition;
+}
+
+setspeedCondition();
+
+let currentSpeed = speedcondition[0]
+let speedticker = 0;
+
+function getNextSpeedCondition() {
+    speedticker = (speedticker + 1) % blockorder.length;
+    let nextSpeed = speedcondition[speedticker];
+    currentSpeed = nextSpeed;
+    return currentSpeed;
+}
+
+// grab the proper duration based off of speeed.
 function getStimulusDuration() {
     if (isPractice == true) {
         stimulusDuration = 3000 - (100 * practicelocation);
         return stimulusDuration;
     } else {
-        stimulusDuration = 500;
+        stimulusDuration = currentSpeed;
         return stimulusDuration;
     }
 }
 
-function youPressSomething(data) {
-    return data.response !== null;
-}
-
+// support subjects answering on either backmask or grid
 function backmaskLength() {
 if (alreadyAnswered == true) {
     backmaskDuration = 150;
 } else {backmaskDuration = 2500;
 }}
-
 
 // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
 const timeline = [];
@@ -587,7 +632,8 @@ images: imagestopreload,
 
 const instructions = {
         type: htmlKeyboardResponse,
-        on_finish: function() {data.stimulus = 'instruction screen 0';} ,
+        on_finish: function(data) {
+        data.stimulus = 'instruction screen 0';} ,
         stimulus: `
         <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
         <div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
@@ -599,7 +645,7 @@ const instructions = {
 
 const instructions1 = {
     type: htmlKeyboardResponse,
-    on_finish: function() {data.stimulus = 'instruction screen 1';} ,
+    on_finish: function(data) {data.stimulus = 'instruction screen 1';} ,
     stimulus: `
         <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
         </p>
@@ -613,7 +659,7 @@ const instructions1 = {
 
 
 const instructions2 = {
-    on_finish: function() {data.stimulus = 'instruction screen 2';} ,
+    on_finish: function(data) {data.stimulus = 'instruction screen 2';} ,
     type: htmlKeyboardResponse,
     stimulus: `
     <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
@@ -628,7 +674,7 @@ const instructions2 = {
 
 const instructions3 = {
     type: htmlKeyboardResponse,
-    on_finish: function() {data.stimulus = 'instruction screen 3';},
+    on_finish: function(data) {data.stimulus = 'instruction screen 3';},
     stimulus: `
     <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
     <div style="display: flex; justify-content: center;">
@@ -643,7 +689,7 @@ const instructions3 = {
 
 const instructions4 = {
     type: htmlKeyboardResponse,
-    on_finish: function() {data.stimulus = 'instruction screen 4';} ,
+    on_finish: function(data) {data.stimulus = 'instruction screen 4';} ,
     stimulus: `
     <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
         <p>Press the spacebar to continue.</p>
@@ -655,7 +701,7 @@ const instructions4 = {
 
 const instructions5 = {
     type: htmlKeyboardResponse,
-    on_finish: function() {data.stimulus = 'instruction screen 5';},
+    on_finish: function(data) {data.stimulus = 'instruction screen 5';},
     stimulus: `
     <p>We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
     <p>The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
@@ -681,7 +727,7 @@ setexperimentalTrajectory();
         <div style='width: 100px;'>
         </div>
     `,
-    on_finish: function() {data.stimulus = 'pre-experimental_briefing';} ,
+    on_finish: function(data) {data.stimulus = 'pre-experimental_briefing';} ,
     post_trial_gap: 2000
 };
 
@@ -707,31 +753,27 @@ const experimental_grid = {
         } else {
             console.log(`a key was pressed.`);
             data.task = currentTrialType;
+            data.time_manipulation = stimulusDuration;
             data.respondedwhen = 'ongrid';
             data.correctresponse = correctJudgement;
             data.targetimagelocation = target_location;
             data.blocktype = currentBlock;
             if (jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
-                console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
                 data.correct = true;
-                console.log(`${data.correct}`);
                 if (isPractice) {
                     data.roundtype = 'practice';
                     feedback = 'Correct!';
-                    console.log(`${feedback}`);
                 } else {
                 data.roundtype = 'experimental';}
             } else {
                 data.correct = false;
-                console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
                 if (isPractice) {
                     data.roundtype = 'practice';
                     feedback = 'Incorrect!';
-                    console.log(`${feedback}`);
                 } else {
                 data.roundtype = 'experimental';}
             }
-            practicelocation = practicelocation + 1;
+            practicelocation = practicelocation + 1; // why didn't this work with iterable syntax? no idea.
             data.stimulus = 'image grid';
             jsPsych.data.get().json();
             alreadyAnswered = true;
@@ -755,6 +797,7 @@ const backmask = {
     trial_duration: function() {backmaskDuration; return backmaskDuration;},
     on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
+        data.time_manipulation = stimulusDuration;
         data.rt = data.rt + stimulusDuration;
         data.correctresponse = correctJudgement;
         data.targetimagelocation = target_location;
@@ -794,7 +837,7 @@ const fixation = {
         getNextTrialType();
         getStimulusDuration();
         },
-        on_finish: function() {data.stimulus = 'fixation cross';} ,
+        on_finish: function(data) {data.stimulus = 'fixation cross';} ,
     };
 
 const feedback_block = {
@@ -805,7 +848,7 @@ const feedback_block = {
         `},
     stimulus_duration: 1000,
     trial_duration: 1000,
-    on_finish: function() {data.stimulus = 'feedback screen';},
+    on_finish: function(data) {data.stimulus = 'feedback screen';},
     response_ends_trial: true,
 };
 
@@ -821,7 +864,7 @@ const debrief_block = {
         var rt = Math.round(correct_trials.select('rt').mean());
 
         return `<p>Congrats m9 - you responded correctly with ${accuracy}% of the trials.</p>
-                <p>Your average response time was ${rt}ms.</p>
+                <p>Your average response time ca ${rt}ms.</p>
                 <p>Drop us the .csv you get!</p>
                 <p>Press any key to complete the experiment.</p>`;
         },
@@ -839,6 +882,7 @@ const takeabreak = {
         numofBreaks = numofBreaks + 1;
         ticker = 0;
         currentBlock = getNextBlock();
+        currentSpeed = getNextSpeedCondition();
         currentBlockDef = getValidTrialTypes(currentBlock);
         blocktrialArray.arrayNames = currentBlockDef;
         experimental_trajectory = setexperimentalTrajectory();
@@ -851,7 +895,7 @@ const takeabreak = {
             <div style='width: 100px;'>
             </div>
         `},
-        on_finish: function() {data.stimulus = 'break screen';},
+        on_finish: function(data) {data.stimulus = 'break screen';},
     post_trial_gap: 2000
 };
 
