@@ -82,7 +82,7 @@ function imageDataUrl(image) {
 const maskImages = [];
 const width = 338;
 const height = 210;
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 10; i++) {
     const noisyGreyscaleImage = generateNoisyGreyscaleImage(width, height);
     const RenderedMasks = imageDataUrl(noisyGreyscaleImage);
     maskImages.push(RenderedMasks);
@@ -413,7 +413,7 @@ function judgements(currentTrialType) {
         return correctJudgement;
     case 'Ontogenetic_Distractor_notarget':
     case 'Phylogenetic_Distractor_notarget':
-        correctJudgement = 'space';
+        correctJudgement = ' ';
         return correctJudgement;
     
     }}
@@ -707,6 +707,7 @@ const experimental_grid = {
     response_ends_trial: true,
     on_finish: function(data) {
         console.log(`the nature of the response: ${data.response}`);
+        console.log(`bs: $`);
         console.log(`currenttargetlocation = ${target_location}`);
         pressedornot = youPressSomething(data);
         if (!pressedornot) {
