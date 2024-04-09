@@ -18,6 +18,7 @@ let backmaskDuration = 150;
 let numofBreaks = 1;
 let currentBlockDef = [];
 let feedback = '';
+let target_location = 0;
 let blockorder = [];
 let practicelocation = 0;
 let pressedornot = false;
@@ -394,7 +395,6 @@ function preloadImageLocations() {
 
 let imagestopreload = preloadImageLocations();
 console.log(`preloaded array == ${imagestopreload}`);
-let target_location = 0
 
 function randomizeTargetLocation() {
     const randomizeTargetLocation = jsPsych.randomization.randomInt(1, 9);
@@ -446,15 +446,15 @@ function judgements(currentTrialType) {
         const gridContainer = document.getElementById('grid-container');
         gridContainer.innerHTML = '';
         let imageLocations = generateImagePaths(currentTrialType); // Initialize imageLocations here
-        let target_location = 0;
-    
+        target_location = 0;
+        target_location = randomizeTargetLocation();
+
         // switch statement for special cases
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
             case 'Ontogenetic_Distractor_Nonthreat_target':
             case 'Phylogenetic_Distractor_Threat_target':
             case 'Phylogenetic_Distractor_Nonthreat_target':
-                target_location = randomizeTargetLocation();
                 const targetImage = imageLocations.splice(0, 1); // remove the first element
                 imageLocations.splice(target_location - 1, 0, targetImage); // inject the target object back into array @ the location number we specified earlier (-1 because of zero indexing)
                 console.log(`current trial type = ${currentTrialType}`);
@@ -468,7 +468,6 @@ function judgements(currentTrialType) {
         }
 
         imageLocations.forEach((imageLocation) => {
-            console.log('foreach');
             addGridItem(gridContainer, imageLocation);
         });
     
@@ -501,10 +500,11 @@ function getNextBlock() {
     blockticker = (blockticker + 1) % blockorder.length;
     let nextBlock = blockorder[blockticker];
     currentBlock = nextBlock;
-    return nextBlock;
+    return currentBlock;
 }
 
-// console.log(`@start, the current block is: ${currentBlock}`)
+console.log(`starting currentblock = ${currentBlock}`);
+
 function getValidTrialTypes(currentBlock) {
         switch(currentBlock) {
             case 'Ontogenetic':
@@ -532,7 +532,8 @@ let blocktrialArray_practice = {
 };
 
 function updateBlocktrialArray() {
-    blocktrialArray.arrayNames = currentBlockDef;
+    currentBlockDef = blocktrialArray.arrayNames;
+    return currentBlockDef;
 }
 
 // call on startup to set the first trial in place
@@ -568,7 +569,7 @@ function getStimulusDuration() {
         stimulusDuration = 3000 - (100 * practicelocation);
         return stimulusDuration;
     } else {
-        stimulusDuration = 700;
+        stimulusDuration = 500;
         return stimulusDuration;
     }
 }
@@ -694,7 +695,7 @@ setexperimentalTrajectory();
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_load: function() {
-        assembleGrid(currentTrialType);
+        assembleGrid();
         isMask = true;
     }, 
     choices: ['q', 'p', ' '],
@@ -721,17 +722,22 @@ const experimental_grid = {
             data.targetimagelocation = target_location;
             data.blocktype = currentBlock;
             if (jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
+                console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
                 data.correct = true;
+                console.log(`${data.correct}`);
                 if (isPractice) {
                     data.roundtype = 'practice';
                     feedback = 'Correct!';
+                    console.log(`${feedback}`);
                 } else {
                 data.roundtype = 'experimental';}
             } else {
                 data.correct = false;
+                console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
                 if (isPractice) {
                     data.roundtype = 'practice';
                     feedback = 'Incorrect!';
+                    console.log(`${feedback}`);
                 } else {
                 data.roundtype = 'experimental';}
             }
@@ -749,6 +755,7 @@ const backmask = {
     type: htmlKeyboardResponse,
     on_load: function() {
     console.log(`already answered = ${alreadyAnswered}`);
+    console.log(`this is ${currentBlockDef}`);
     console.log(`this trial is supposed to last ${backmaskDuration} ms`);
     assembleGrid();
     }, 
@@ -762,18 +769,18 @@ const backmask = {
     trial_duration: function() {backmaskDuration; return backmaskDuration;},
     on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
-        console.log(`pre-add = ${data.rt}`);
         data.rt = data.rt + stimulusDuration;
-        console.log(`post-add = ${data.rt}`);
         data.correctresponse = correctJudgement;
         console.log(`currenttargetlocation = ${target_location}`);
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
         if(jsPsych.pluginAPI.compareKeys(data.response, correctJudgement)) {
+            console.log(`jspsychpluginapi ==== ${data.response}, ${correctJudgement}`);
             data.correct = true;
             if (isPractice == true) {
                 data.roundtype = 'practice';
                 feedback = 'Correct!';
+                console.log(`${feedback}`);
             } else {
             data.roundtype = 'experimental';}
                 } else {
@@ -781,6 +788,7 @@ const backmask = {
                     if (isPractice == true) {
                         data.roundtype = 'practice';
                         feedback = 'Incorrect!';
+                        console.log(`${feedback}`);
                 } else {data.roundtype = 'experimental';}
             }
             data.stimulus = 'mask grid';
@@ -847,13 +855,13 @@ const test_procedure = {
 
 const takeabreak = {
     type: htmlKeyboardResponse,
-    on_start: function() {
+    on_load: function() {
         numofBreaks = numofBreaks + 1;
         ticker = 0;
-        getNextBlock();
-        getValidTrialTypes();
-        updateBlocktrialArray();
-        setexperimentalTrajectory();
+        currentBlock = getNextBlock();
+        currentBlockDef = getValidTrialTypes(currentBlock);
+        blocktrialArray.arrayNames = currentBlockDef;
+        experimental_trajectory = setexperimentalTrajectory();
         },
     stimulus: function() {return `
             <p>"Whoa, catch your breath man, shake out those lips!"
