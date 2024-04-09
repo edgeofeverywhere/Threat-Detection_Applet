@@ -13,7 +13,7 @@ let isMask = false;
 let correctJudgement = '';
 let loadedImagesCount = 0;
 let isPractice = true;
-let stimulusDuration = 3000;
+let stimulusDuration = 500;
 let backmaskDuration = 150;
 let numofBreaks = 1;
 let currentBlockDef = [];
@@ -635,7 +635,9 @@ const instructions3 = {
     type: htmlKeyboardResponse,
     stimulus: `
     <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
-    <img src = "/img/Prototypes/kitten.png"</img>
+    <div style="display: flex; justify-content: center;">
+    <img src = "/img/Prototypes/kitten.png" <style="max-width: 40%; height: auto;">
+    </div>
         <p>Press the 'p' key to continue.</p>
         <div style='width: 100px;'>
         </div>
@@ -687,11 +689,6 @@ setexperimentalTrajectory();
     post_trial_gap: 2000
 };
 
-// Q for J ---->
-// we want, in const backmask to add the logged data.rt (if it exists) from experimental grid to the backmask data.rt if a subject doesn't respond within the earlier window -- is this possible to fetch or can it not be easily returned with current class membership?
-// also it seems like the properties of the objects aren't updating depending on the state of global lets - tried wrapping in functions to return values of global lets alreadyanswered
-// and backmaskduration but this didn't seem to work - do we have to write helpers externally for both that reference those globals instead?? or is there some other method that lets us work around this?
-
 const experimental_grid = {
     type: htmlKeyboardResponse,
     on_load: function() {
@@ -703,8 +700,8 @@ const experimental_grid = {
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
-    stimulus_duration: stimulusDuration,
-    trial_duration: stimulusDuration,
+    stimulus_duration: function() {stimulusDuration; return stimulusDuration;},
+    trial_duration: function() {stimulusDuration; return stimulusDuration;},
     response_ends_trial: true,
     on_finish: function(data) {
         console.log(`the nature of the response: ${data.response}`);
@@ -764,7 +761,7 @@ const backmask = {
     <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `,
-    response_ends_trial: function () {!alreadyAnswered; return !alreadyAnswered},
+    response_ends_trial: function () {!alreadyAnswered; return !alreadyAnswered;},
     stimulus_duration: 150,
     trial_duration: function() {backmaskDuration; return backmaskDuration;},
     on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
