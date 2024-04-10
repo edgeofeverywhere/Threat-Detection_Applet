@@ -78,7 +78,6 @@ function randommaskUrl(image) {
       }
   }
   context.putImageData(imageData, 0, 50);
-  // returns embedded
   return canvas.toDataURL('image/png');
 }
 
@@ -587,8 +586,44 @@ let speedconditionArray = {
     arrayNums: [2, 2]
 }
 // names similar and functions to before
+// i did this in an overcomplicated way so I could extend it later sooo whatevs - this function generates a random order for speed conditions and ensures each participant gets at least one of each type.
 function setspeedCondition() {
-    speedcondition = jsPsych.randomization.repeat(speedconditionArray.arrayNames, speedconditionArray.arrayNums);
+    let speedcondition = jsPsych.randomization.repeat(speedconditionArray.arrayNames, speedconditionArray.arrayNums);
+    let uniqueBlockTypes = [...new Set(blockorder)];
+    let targetCount = Math.ceil(speedcondition.length / 2 / uniqueBlockTypes.length);
+    let countMap = {};
+    for (let blocktype of uniqueBlockTypes) {
+        let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
+        countMap[blocktype] = {};
+        countMap[blocktype]['400'] = blockIndices.filter(index => speedcondition[index] === '400').length;
+        countMap[blocktype]['800'] = blockIndices.filter(index => speedcondition[index] === '800').length;
+    }
+
+    for (let blocktype of uniqueBlockTypes) {
+        let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
+        for (let speed of ['400', '800']) {
+            let speedDifference = countMap[blocktype][speed] - targetCount;
+            if (speedDifference < 0) {
+                for (let i = 0; i < Math.abs(speedDifference); i++) {
+                    let indexToAdd = blockIndices.find(index => speedcondition[index] !== speed);
+                    if (indexToAdd !== undefined) {
+                        speedcondition[indexToAdd] = speed;
+                        countMap[blocktype][speed]++;
+                    }
+                }
+            } else if (speedDifference > 0) {
+                for (let i = 0; i < Math.abs(speedDifference); i++) {
+                    let indexToRemove = blockIndices.find(index => speedcondition[index] === speed);
+                    if (indexToRemove !== undefined) {
+                        speedcondition[indexToRemove] = (speed === '400') ? '800' : '400';
+                        countMap[blocktype][speed]--;
+                    }
+                }
+            }
+        }
+    }
+    console.log(`blocktrialarray: ${blockorder}`);
+    console.log(`Final speedcondition array: ${speedcondition}`);
     return speedcondition;
 }
 
@@ -607,6 +642,7 @@ function getNextSpeedCondition() {
 // grab the proper duration based off of speeed.
 function getStimulusDuration() {
     if (isPractice == true) {
+        // speeed up as it goooessss oooonnnnn
         stimulusDuration = 3000 - (100 * practicelocation);
         return stimulusDuration;
     } else {
@@ -817,7 +853,7 @@ const backmask = {
                 } else {data.roundtype = 'experimental';}
             }
             data.stimulus = 'mask grid';
-            practicelocation = practicelocation + 1; // it will be updated every trial (practice or not, but since it only matters in the first practice round, no need to wrap it with a conditional)
+            practicelocation = practicelocation + 1; // it will be updated every trial (practice or not, but since it only matters in the first practice round, no need to wrap it with a conditional - also the iterable syntax didn't work lel)
                 jsPsych.data.get().json();
                 isMask = false;
     }},
