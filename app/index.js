@@ -426,7 +426,7 @@ function judgements(currentTrialType) {
         return correctJudgement;
     
     }}
-// function that adds html divisors to the trial in the proper position 
+// function that adds html divisors to the trial in the proper position  (try again git)
 function addGridItem(gridContainer, imageLocation) {
     const gridReadyEvent = new Event('gridReady');
     const gridItem = document.createElement('div');
