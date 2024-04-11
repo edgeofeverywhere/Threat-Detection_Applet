@@ -210,7 +210,7 @@ function generateImagePaths(currentTrialType) {
                 }
                 break;
             case 'Phylogenetic_Distractor_Threat_target':
-                imageLocations.push(`img/Practice_Normal/tiger_${targetRngTigers}.jpg`);
+                imageLocations.push(`img/Practice_Normal/Tiger_${targetRngTigers}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let kitten = targetrngKitten();
                     imageLocations.push(`img/Practice_Normal/kitten_${kitten}.jpg`);
