@@ -189,43 +189,43 @@ function generateImagePaths(currentTrialType) {
     
         switch (currentTrialType) {
             case 'Ontogenetic_Distractor_Threat_target':
-                imageLocations.push(`/img/Practice_Normal/knife_${targetRngKnife}.jpg`);
+                imageLocations.push(`img/Practice_Normal/knife_${targetRngKnife}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let spoony = targetrngSpoons();
-                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Ontogenetic_Distractor_Nonthreat_target':
-                imageLocations.push(`/img/Practice_Normal/Ruler_${targetRngRulers}.jpg`);
+                imageLocations.push(`img/Practice_Normal/Ruler_${targetRngRulers}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let spoony = targetrngSpoons();
-                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_Nonthreat_target':
-                imageLocations.push(`/img/Practice_Normal/Bunny_${targetRngBunnies}.jpg`);
+                imageLocations.push(`img/Practice_Normal/Bunny_${targetRngBunnies}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_Threat_target':
-                imageLocations.push(`/img/Practice_Normal/tiger_${targetRngTigers}.jpg`);
+                imageLocations.push(`img/Practice_Normal/tiger_${targetRngTigers}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Ontogenetic_Distractor_notarget':
                 for (let i = 0; i < 9; i++) {
                     let spoony = targetrngSpoons();
-                    imageLocations.push(`/img/Practice_Normal/Spoon_${spoony}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Spoon_${spoony}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_notarget':
                 for (let i = 0; i < 9; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`/img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
                 }
                 break;
             default:
@@ -242,39 +242,39 @@ function generateImagePaths(currentTrialType) {
 
         switch (currentTrialType) {
         case 'Ontogenetic_Distractor_Threat_target':
-            imageLocations.push(`/img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
+            imageLocations.push(`img/Guns_White_${randomDir}/Gun${targetRngGun}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();        
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                imageLocations.push(`img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Ontogenetic_Distractor_Nonthreat_target':
-            imageLocations.push(`/img/Guns_White_${randomDir}/Phone${targetRngPhone}.jpg`);
+            imageLocations.push(`img/Guns_White_${randomDir}/Phone${targetRngPhone}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                imageLocations.push(`img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_Nonthreat_target':
-            imageLocations.push(`/img/Spiders_White_${randomDir}/b${targetRngBird}.jpg`);
+            imageLocations.push(`img/Spiders_White_${randomDir}/b${targetRngBird}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                imageLocations.push(`img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_Threat_target':
-            imageLocations.push(`/img/Spiders_White_${randomDir}/s${targetRngSpider}.jpg`);
+            imageLocations.push(`img/Spiders_White_${randomDir}/s${targetRngSpider}.jpg`);
             for (let i = 0; i < 8; i++) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                imageLocations.push(`img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         case 'Ontogenetic_Distractor_notarget':
@@ -282,7 +282,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
+                imageLocations.push(`img/Guns_White_${randomDir}/Stapler${distractorTrng}.jpg`);
             }
             break;
         case 'Phylogenetic_Distractor_notarget':
@@ -290,7 +290,7 @@ function generateImagePaths(currentTrialType) {
                 const randomDir = randomDirection();
                 const distractorTrng = distractortrng();
                 innerforscopeRNG();
-                imageLocations.push(`/img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
+                imageLocations.push(`img/Spiders_White_${randomDir}/bf${distractorTrng}.jpg`);
             }
             break;
         default:
@@ -304,7 +304,7 @@ function generateImagePaths(currentTrialType) {
 // function that gives the paths for jsPsych to preload and download - you could probably abstract this further to cut down on verbosity even more.
 function preloadImageLocations() {
     let valid_directions = ['Normal', 'Reverse'];
-    let folder_prefixes = ['/img/Guns_White_', 'img/Spiders_White_', 'img/Practice_'];
+    let folder_prefixes = ['img/Guns_White_', 'img/Spiders_White_', 'img/Practice_'];
     let imagestopreload = [];
 
     for (let i = 1; i < 100; i++) {
@@ -394,8 +394,8 @@ function preloadImageLocations() {
         }
     }
 
-    imagestopreload.push('/img/Prototypes/kitten.png')
-    imagestopreload.push('/img/Prototypes/knife.png')
+    imagestopreload.push('img/Prototypes/kitten.png')
+    imagestopreload.push('img/Prototypes/knife.png')
 
     return imagestopreload;
 }
@@ -685,7 +685,7 @@ const instructions1 = {
         <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
         </p>
         <div style="display: flex; justify-content: center;">
-        <img src = "/img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+        <img src = "img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
         </div>
         <p>After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
         <p>Press any key to continue.</p>
@@ -701,7 +701,7 @@ const instructions2 = {
     stimulus: `
     <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
     <div style="display: flex; justify-content: center;">
-      <img src="/img/Prototypes/knife.png" style="max-width: 40%; height: auto;">
+      <img src="img/Prototypes/knife.png" style="max-width: 40%; height: auto;">
     </div>
     <p>Press the 'q' key to continue.</p>
     <div style="margin-top: calc(5vh + 20px);"></div>    
@@ -715,7 +715,7 @@ const instructions3 = {
     stimulus: `
     <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
     <div style="display: flex; justify-content: center;">
-    <img src = "/img/Prototypes/kitten.png" <style="max-width: 40%; height: auto;">
+    <img src = "img/Prototypes/kitten.png" <style="max-width: 40%; height: auto;">
     </div>
         <p>Press the 'p' key to continue.</p>
         <div style='width: 100px;'>
@@ -730,7 +730,7 @@ const instructions4 = {
     stimulus: `
     <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
     <div style="display: flex; justify-content: center;">
-    <img src = "/img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+    <img src = "img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
     </div>
         <p>Press the spacebar to continue.</p>
         <div style='width: 100px;'>
