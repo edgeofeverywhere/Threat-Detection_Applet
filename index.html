@@ -1,6 +1,21 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta http-equiv="refresh" content="0; url=https://repo.github.io/dist/index.html">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Pages Redirect</title>
+  <script>
+    // Function to redirect to the subdirectory while preserving the URL
+    (function() {
+      var redirectUrl = window.location.href.replace(
+        window.location.origin,
+        window.location.origin + "/dist"
+      );
+      window.location.replace(redirectUrl);
+    })();
+  </script>
+</head>
 <body>
+  <p>Redirecting...</p>
 </body>
+</html>
