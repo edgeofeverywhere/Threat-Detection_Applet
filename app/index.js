@@ -685,7 +685,9 @@ const instructions1 = {
     stimulus: `
         <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
         </p>
-
+        <div style="display: flex; justify-content: center;">
+        <img src = "/img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+        </div>
         <p>After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
         <p>Press any key to continue.</p>
         <div style='width: 100px;'>
@@ -728,6 +730,7 @@ const instructions4 = {
     on_finish: function(data) {data.stimulus = 'instruction screen 4';} ,
     stimulus: `
     <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
+    <div style="display: flex; justify-content: center;">
     <img src = "/img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
     </div>
         <p>Press the spacebar to continue.</p>
