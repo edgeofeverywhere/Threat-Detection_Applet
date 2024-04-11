@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GitHub Pages Redirect</title>
+  <title>redir</title>
   <script>
-    // Function to redirect to the subdirectory while preserving the URL
     (function() {
       var redirectUrl = window.location.href.replace(
-        window.location.origin,
-        window.location.origin + "/dist"
+        window.location.origin + "/cogs219_202404_experiment_src", 
+        window.location.origin + "/cogs219_202404_experiment_src/dist"
       );
       window.location.replace(redirectUrl);
     })();
