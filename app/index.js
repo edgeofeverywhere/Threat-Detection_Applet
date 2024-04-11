@@ -533,7 +533,7 @@ getValidTrialTypes(currentBlock);
 // ! Distribution of # of threats, # nonthreats, # of notargets per block !
 let blocktrialArray = {
     arrayNames: currentBlockDef,
-    arrayNums: [20, 20, 2]
+    arrayNums: [18, 18, 4]
 };
 
 let blocktrialArray_practice = {
