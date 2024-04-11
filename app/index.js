@@ -206,14 +206,14 @@ function generateImagePaths(currentTrialType) {
                 imageLocations.push(`img/Practice_Normal/Bunny_${targetRngBunnies}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Phylogenetic_Distractor_Threat_target':
                 imageLocations.push(`img/Practice_Normal/tiger_${targetRngTigers}.jpg`);
                 for (let i = 0; i < 8; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/kitten_${kitten}.jpg`);
                 }
                 break;
             case 'Ontogenetic_Distractor_notarget':
@@ -225,7 +225,7 @@ function generateImagePaths(currentTrialType) {
             case 'Phylogenetic_Distractor_notarget':
                 for (let i = 0; i < 9; i++) {
                     let kitten = targetrngKitten();
-                    imageLocations.push(`img/Practice_Normal/Kitten_${kitten}.jpg`);
+                    imageLocations.push(`img/Practice_Normal/kitten_${kitten}.jpg`);
                 }
                 break;
             default:
