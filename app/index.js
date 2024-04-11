@@ -10,6 +10,7 @@ import PreloadPlugin from '@jspsych/plugin-preload';
 // globals 
 let imageLocations = [];
 let isMask = false;
+let speedcondition = [];
 let correctJudgement = '';
 let loadedImagesCount = 0;
 let isPractice = true;
@@ -22,7 +23,6 @@ let target_location = 0;
 let blockorder = [];
 let practicelocation = 0;
 let pressedornot = false;
-let speedcondition = [];
 let alreadyAnswered = false;
 let experimental_trajectory = [];
 
@@ -627,7 +627,7 @@ function setspeedCondition() {
     return speedcondition;
 }
 
-setspeedCondition();
+speedcondition = setspeedCondition();
 
 let currentSpeed = speedcondition[0]
 let speedticker = 0;
@@ -645,12 +645,11 @@ function getStimulusDuration() {
         // speeed up as it goooessss oooonnnnn
         stimulusDuration = 3000 - (100 * practicelocation);
         return stimulusDuration;
-    } else {
+    } if (isPractice == false) {
         stimulusDuration = currentSpeed;
         return stimulusDuration;
+        }
     }
-}
-
 // support subjects answering on either backmask or grid
 function backmaskLength() {
 if (alreadyAnswered == true) {
@@ -783,19 +782,19 @@ const experimental_grid = {
         <div id="grid-container">
         <!-- Grid items will be dynamically added here -->
     </div>    `, 
-    stimulus_duration: function() {stimulusDuration; return stimulusDuration;},
-    trial_duration: function() {stimulusDuration; return stimulusDuration;},
+    stimulus_duration: function(){stimulusDuration; return stimulusDuration},
+    trial_duration: function(){stimulusDuration; return stimulusDuration},
     response_ends_trial: true,
     on_finish: function(data) {
         pressedornot = youPressSomething(data);
         if (!pressedornot) {
-            console.log(`no key was pressed.`);
             alreadyAnswered = false;
         } else {
-            console.log(`a key was pressed.`);
             data.task = currentTrialType;
             data.time_manipulation = stimulusDuration;
-            data.respondedwhen = 'ongrid';
+            console.log(`currentSpeed is ${currentSpeed}`);
+            console.log(`stimulusDuration is ${stimulusDuration}`);
+                data.respondedwhen = 'ongrid';
             data.correctresponse = correctJudgement;
             data.targetimagelocation = target_location;
             data.blocktype = currentBlock;
@@ -836,10 +835,13 @@ const backmask = {
     response_ends_trial: function () {!alreadyAnswered; return !alreadyAnswered;},
     stimulus_duration: 150,
     trial_duration: function() {backmaskDuration; return backmaskDuration;},
-    on_finish: function(data) { if (alreadyAnswered == true) {isMask = false} else {data.task = currentTrialType;
+    on_finish: function(data) { if (alreadyAnswered == true) {isMask = false;
+} else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
         data.time_manipulation = stimulusDuration;
         data.rt = data.rt + stimulusDuration;
+        console.log(`currentSpeed is ${currentSpeed}`);
+        console.log(`stimulusDuration is ${stimulusDuration}`);
         data.correctresponse = correctJudgement;
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
@@ -876,7 +878,7 @@ const fixation = {
     response_ends_trial: false,
     on_start: function() {         
         getNextTrialType();
-        getStimulusDuration();
+        stimulusDuration = getStimulusDuration();
         },
         on_finish: function(data) {data.stimulus = 'fixation cross';} ,
     };
@@ -914,7 +916,7 @@ const debrief_block = {
 const test_procedure = {
     timeline: [fixation, experimental_grid, backmask],
     randomize_order: false,
-    repetitions: 42,
+    repetitions: 40,
 }
 
 const takeabreak = {
@@ -922,21 +924,21 @@ const takeabreak = {
     on_load: function() {
         numofBreaks = numofBreaks + 1;
         ticker = 0;
-        currentBlock = getNextBlock();
-        currentSpeed = getNextSpeedCondition();
-        currentBlockDef = getValidTrialTypes(currentBlock);
-        blocktrialArray.arrayNames = currentBlockDef;
-        experimental_trajectory = setexperimentalTrajectory();
         },
     stimulus: function() {return `
-            <p>"Whoa, catch your breath man, shake out those lips!"
-            "It's downhill from here, just ${4 - numofBreaks} blocks more to go!"
-            "Now it gets tricky, so listen REAL good!"
+            <p>You have just completed block ${numofBreaks}</p>
+            <p>Take a short break, and when you feel ready, press any key to continue to the next block of trials
             </p>
             <div style='width: 100px;'>
             </div>
         `},
-        on_finish: function(data) {data.stimulus = 'break screen';},
+        on_finish: function(data) {data.stimulus = 'break screen';
+        currentBlock = getNextBlock();
+        currentSpeed = getNextSpeedCondition();
+        stimulusDuration = getStimulusDuration();
+        currentBlockDef = getValidTrialTypes(currentBlock);
+        blocktrialArray.arrayNames = currentBlockDef;
+        experimental_trajectory = setexperimentalTrajectory();},
     post_trial_gap: 2000
 };
 
