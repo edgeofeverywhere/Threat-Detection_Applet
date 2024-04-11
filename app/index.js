@@ -728,6 +728,8 @@ const instructions4 = {
     on_finish: function(data) {data.stimulus = 'instruction screen 4';} ,
     stimulus: `
     <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
+    <img src = "/img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+    </div>
         <p>Press the spacebar to continue.</p>
         <div style='width: 100px;'>
         </div>
