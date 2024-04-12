@@ -394,8 +394,10 @@ function preloadImageLocations() {
         }
     }
 
-    imagestopreload.push('img/Prototypes/kitten.png')
-    imagestopreload.push('img/Prototypes/knife.png')
+    imagestopreload.push('img/Prototypes/kitten2.png');
+    imagestopreload.push('img/Prototypes/knife2.png');
+    imagestopreload.push('img/Prototypes/KittenGrid_discrepants2.png');
+    imagestopreload.push('img/Prototypes/KittenGrid_nodiscrepants2.png');
 
     return imagestopreload;
 }
@@ -664,101 +666,151 @@ type: PreloadPlugin,
 auto_preload: true,
 images: imagestopreload,
 };
+// inline css stuff for better looking prompts/
+const prettystyletingz = 
+    `
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap');
+
+    body {
+        font-family: 'Open Sans', 'Arial', sans-serif;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        margin: auto;
+    }
+
+    .garamond-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 2em; 
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    .garamond-feedback-text {
+        font-family: "Cormorant Garamond", serif;
+        font-size: 3em; 
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    #centtrial-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2vw;
+    }
+
+    #centtrial-container p {
+        font-size: 3em;
+        margin: 0;
+    }
+</style>
+
+`;
+
 
 const instructions = {
         type: htmlKeyboardResponse,
         on_finish: function(data) {
         data.stimulus = 'instruction screen 0';} ,
-        stimulus: `<html lang="en">
+        stimulus: function() { return `<!DOCTYPE html>
+        <html lang="en">
         <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                @import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
-                .garamond-text {
-                    font-family: 'EB Garamond', serif;
-                }
-            </style>
+        ${prettystyletingz}
         </head>
-        <p class="garamond-text">Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
-        <div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
-          <p style="font-size: 3em;">+</p>
-        </div>
-        <p class="garamond-text">First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
-                `,
+        <body>
+            <p class="garamond-text">Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
+            <div id="centtrial-container">
+                <p>+</p>
+            </div>
+            <p class="garamond-text">First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
+        </body>
+        </html>        
+                `},
 };
 
 const instructions1 = {
     type: htmlKeyboardResponse,
     on_finish: function(data) {data.stimulus = 'instruction screen 1';} ,
-    stimulus: `
-        <p>You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
+    stimulus: function() {return`
+        <head>
+        ${prettystyletingz}
+        </head>
+        <p class="garamond-text">You will then be shown a 3x3 grid of objects, similar to below, where one object differs in type from the rest.
         </p>
-        <div style="display: flex; justify-content: center;">
-        <img src = "img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+        <div id="centtrial-container">
+        <img src = "img/Prototypes/KittenGrid_discrepants2.png">
         </div>
-        <p>After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
-        <p>Press any key to continue.</p>
-        <div style='width: 100px;'>
-        </div>
-    `,
+        <p class="garamond-text">After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
+        <p class="garamond-text">Press any key to continue.</p>
+    `},
 };
 
 
 const instructions2 = {
     on_finish: function(data) {data.stimulus = 'instruction screen 2';} ,
     type: htmlKeyboardResponse,
-    stimulus: `
-    <p>If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
-    <div style="display: flex; justify-content: center;">
-      <img src="img/Prototypes/knife.png" style="max-width: 40%; height: auto;">
+    stimulus: function() { return`
+    <head>
+    ${prettystyletingz}
+    </head>
+    <p class="garamond-text">If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
+    <div id="centtrial-container">
+    <img src="img/Prototypes/knife2.png">
     </div>
-    <p>Press the 'q' key to continue.</p>
-    <div style="margin-top: calc(5vh + 20px);"></div>    
-    `,
+    <p class="garamond-text">Press the 'q' key to continue.</p>
+    `},
     choices:["q"],
 };
 
 const instructions3 = {
     type: htmlKeyboardResponse,
     on_finish: function(data) {data.stimulus = 'instruction screen 3';},
-    stimulus: `
-    <p>If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
-    <div style="display: flex; justify-content: center;">
-    <img src = "img/Prototypes/kitten.png" <style="max-width: 40%; height: auto;">
+    stimulus: function() {return `
+    <head>
+    ${prettystyletingz}
+    </head>
+    <p class="garamond-text">If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
+    <div id="centtrial-container">
+    <img src = "img/Prototypes/kitten2.png">
     </div>
-        <p>Press the 'p' key to continue.</p>
-        <div style='width: 100px;'>
-        </div>
-    `,
+    <p class="garamond-text">Press the 'p' key to continue.</p>
+    `},
     choices:["p"],
 };
 
 const instructions4 = {
     type: htmlKeyboardResponse,
     on_finish: function(data) {data.stimulus = 'instruction screen 4';} ,
-    stimulus: `
-    <p>If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
-    <div style="display: flex; justify-content: center;">
-    <img src = "img/Prototypes/KittenGrid_nodiscrepants.png" <style="max-width: 40%; height: auto;">
+    stimulus: function(){ return `
+    <head>
+    ${prettystyletingz}
+    </head>
+    <p class="garamond-text">If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
+    <div id="centtrial-container">
+    <img src = "img/Prototypes/KittenGrid_nodiscrepants2.png">
     </div>
-        <p>Press the spacebar to continue.</p>
-        <div style='width: 100px;'>
-        </div>
-    `,
+    <p class="garamond-text">Press the spacebar to continue.</p>
+    `},
     choices:[" "],
+    css_classes: ['garamond-text', 'centtrial-container']
 };
 
 const instructions5 = {
     type: htmlKeyboardResponse,
     on_finish: function(data) {data.stimulus = 'instruction screen 5';},
-    stimulus: `
-    <p>We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
-    <p>The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
-        <p>Press any key to continue.</p>
-        <div style='width: 100px;'>
-        </div>
-    `,
+    stimulus: function(){return `
+    <head>
+    ${prettystyletingz}
+    </head>
+    <p class="garamond-text">We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
+    <p class="garamond-text">Note that if you do not render a response within a two and a half second window after the grid disappears, the experiment will continue to progress regardless.</p>
+    <p class="garamond-text">The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
+    <p class="garamond-text">Press any key to continue.</p>
+    `},
 };
 
 const preexperimentalinstructions = {
@@ -767,16 +819,15 @@ isPractice = false;
 setexperimentalTrajectory();
     },
     type: htmlKeyboardResponse,
-    stimulus: `
-    <p>We are now ready to begin the main experiment!</p>
-    <p>Note that if you do not render a response within a two and a half second window after the grid disappears, the experiment will continue to progress regardless.</p>
-    <p>You will be given a break after completing a set of 40 trials in a row. </p>
-    <p>You will be given three breaks in total.</p>
-    <p>Once all these sets have been completed, you will respond to a brief post-experimental questionnaire!</p>
-    <p>When you are ready to begin, press any key to continue!</p>
-        <div style='width: 100px;'>
-        </div>
-    `,
+    stimulus: function(){return `
+    <head>
+    ${prettystyletingz}
+    </head>
+    <p class="garamond-text">We are now ready to begin the main experiment!</p>
+    <p class="garamond-text">You will be given a break after completing a set of 40 trials in a row. </p>
+    <p class="garamond-text">You will be given three breaks in total.</p>
+    <p class="garamond-text">When you are ready to begin, press any key to continue!</p>
+    `},
     on_finish: function(data) {data.stimulus = 'pre-experimental_briefing';} ,
     post_trial_gap: 2000
 };
@@ -879,7 +930,7 @@ const backmask = {
 
 const fixation = {
     type: htmlKeyboardResponse,
-    stimulus: `<div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
+    stimulus: `<div>
     <p style="font-size: 3em;">+</p>
   </div>
 `,
@@ -896,8 +947,10 @@ const fixation = {
 const feedback_block = {
     type: htmlKeyboardResponse,
     stimulus: function() {
-        return `
-            <div>${feedback}</div>
+        return `    <head>
+        ${prettystyletingz}
+        </head>    
+            <p class="garamond-feedback-text">${feedback}</p>
         `},
     stimulus_duration: 1000,
     trial_duration: 1000,
@@ -936,9 +989,11 @@ const takeabreak = {
         ticker = 0;
         },
     stimulus: function() {return `
-            <p>You have just completed block ${numofBreaks}!</p>
-            <p>Take a short break, and when you feel ready, press any key to continue to the next block of trials
-            </p>
+    <head>
+    ${prettystyletingz}
+    </head>    
+            <p class= "garamond-text">You have just completed block ${numofBreaks}!</p>
+            <p class="garamond-text">Take a short break, and when you feel ready, press any key to continue to the next block of trials</p>
             <div style='width: 100px;'>
             </div>
         `},
