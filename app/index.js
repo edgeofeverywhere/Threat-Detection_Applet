@@ -686,7 +686,7 @@ const prettystyletingz =
 
     .garamond-text {
         font-family: "Cormorant Garamond", serif;
-        font-size: 2em; 
+        font-size: 1.5em; 
         text-align: center;
         line-height: 1.5;
     }
