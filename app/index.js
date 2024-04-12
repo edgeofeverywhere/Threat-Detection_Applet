@@ -674,19 +674,9 @@ const prettystyletingz =
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond&display=swap');
 
-    body {
-        font-family: 'Open Sans', 'Arial', sans-serif;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        height: 60vh;
-        width: 60vw;
-        margin: auto;
-    }
-
     .garamond-text {
         font-family: "Cormorant Garamond", serif;
-        font-size: 1.5em; 
+        font-size: 1.2em; 
         text-align: center;
         line-height: 1.5;
     }
@@ -699,10 +689,10 @@ const prettystyletingz =
     }
 
     #centtrial-container {
-        display: flex;
+        display: flex-inline;
         justify-content: center;
         align-items: center;
-        padding: 2vw;
+        padding: 1vw;
     }
 
     #centtrial-container p {
@@ -732,6 +722,7 @@ const instructions = {
         </body>
         </html>        
                 `},
+        css_classes: ['garamond-text', 'centtrial-container']
 };
 
 const instructions1 = {
@@ -749,6 +740,7 @@ const instructions1 = {
         <p class="garamond-text">After the grid disappears, your job is to make a determination as to the type of object that was different from the rest as quickly possible.</p>
         <p class="garamond-text">Press any key to continue.</p>
     `},
+    css_classes: ['garamond-text', 'centtrial-container']
 };
 
 
@@ -766,6 +758,8 @@ const instructions2 = {
     <p class="garamond-text">Press the 'q' key to continue.</p>
     `},
     choices:["q"],
+    css_classes: ['garamond-text', 'centtrial-container']
+
 };
 
 const instructions3 = {
@@ -782,6 +776,8 @@ const instructions3 = {
     <p class="garamond-text">Press the 'p' key to continue.</p>
     `},
     choices:["p"],
+    css_classes: ['garamond-text', 'centtrial-container']
+
 };
 
 const instructions4 = {
@@ -814,6 +810,7 @@ const instructions5 = {
     <p class="garamond-text">The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
     <p class="garamond-text">Press any key to continue.</p>
     `},
+    css_classes: ['garamond-text', 'centtrial-container']
 };
 
 const preexperimentalinstructions = {
@@ -832,7 +829,8 @@ setexperimentalTrajectory();
     <p class="garamond-text">When you are ready to begin, press any key to continue!</p>
     `},
     on_finish: function(data) {data.stimulus = 'pre-experimental_briefing';} ,
-    post_trial_gap: 2000
+    post_trial_gap: 2000,
+    css_classes: ['garamond-text', 'centtrial-container']
 };
 
 const experimental_grid = {
@@ -984,6 +982,7 @@ const debrief_block = {
                 <p class="garamond-text">Drop us the .csv you get!</p>
                 <p class="garamond-text">Press any key to complete the experiment.</p>`;
         },
+        css_classes: ['garamond-text', 'centtrial-container']
     };
 
 const test_procedure = {
@@ -1014,7 +1013,8 @@ const takeabreak = {
         currentBlockDef = getValidTrialTypes(currentBlock);
         blocktrialArray.arrayNames = currentBlockDef;
         experimental_trajectory = setexperimentalTrajectory();},
-    post_trial_gap: 2000
+    post_trial_gap: 2000,
+    css_classes: ['garamond-text', 'centtrial-container']
 };
 
 const practice_phase = {
