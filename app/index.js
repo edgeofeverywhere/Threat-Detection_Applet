@@ -652,6 +652,7 @@ function getStimulusDuration() {
         return stimulusDuration;
         }
     }
+
 // support subjects answering on either backmask or grid
 function backmaskLength() {
 if (alreadyAnswered == true) {
@@ -666,6 +667,7 @@ type: PreloadPlugin,
 auto_preload: true,
 images: imagestopreload,
 };
+
 // inline css stuff for better looking prompts/
 const prettystyletingz = 
     `
@@ -711,7 +713,7 @@ const prettystyletingz =
 
 `;
 
-
+//timelineobjects
 const instructions = {
         type: htmlKeyboardResponse,
         on_finish: function(data) {
@@ -917,7 +919,10 @@ const backmask = {
                     data.correct = false;
                     if (isPractice == true) {
                         data.roundtype = 'practice';
-                        feedback = 'Incorrect!';
+                        pressedornot = youPressSomething(data);
+                        if (!pressedornot) {
+                        feedback = 'No input registered!';} else {                
+                        feedback = 'Incorrect!';}
                 } else {data.roundtype = 'experimental';}
             }
             data.stimulus = 'mask grid';
@@ -969,10 +974,14 @@ const debrief_block = {
         var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
         var rt = Math.round(correct_trials.select('rt').mean());
 
-        return `<p>Congrats m9 - you responded correctly with ${accuracy}% of the trials.</p>
-                <p>Your average response time ca ${rt}ms.</p>
-                <p>Drop us the .csv you get!</p>
-                <p>Press any key to complete the experiment.</p>`;
+        return `
+        <head>
+        ${prettystyletingz}
+        </head>
+        <p class="garamond-text">Congrats m9 - you responded correctly with ${accuracy}% of the trials.</p>
+                <p class="garamond-text>Your average response time ca ${rt}ms.</p>
+                <p class="garamond-text">Drop us the .csv you get!</p>
+                <p class="garamond-text">Press any key to complete the experiment.</p>`;
         },
     };
 
