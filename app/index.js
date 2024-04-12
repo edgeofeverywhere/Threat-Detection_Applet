@@ -679,8 +679,8 @@ const prettystyletingz =
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
-        width: 100vw;
+        height: 60vh;
+        width: 60vw;
         margin: auto;
     }
 
