@@ -4,7 +4,6 @@ import './styles/grid.css';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import 'ndarray';
 import 'ndarray-ops';
-import { Buffer } from 'buffer-es6';
 import gaussian from 'gaussian'; 
 import PreloadPlugin from '@jspsych/plugin-preload';
 
