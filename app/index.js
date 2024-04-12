@@ -4,6 +4,7 @@ import './styles/grid.css';
 import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import 'ndarray';
 import 'ndarray-ops';
+import fullscreen from '@jspsych/plugin-fullscreen';
 import gaussian from 'gaussian'; 
 import PreloadPlugin from '@jspsych/plugin-preload';
 
@@ -592,7 +593,8 @@ let speedconditionArray = {
 function setspeedCondition() {
     let speedcondition = jsPsych.randomization.repeat(speedconditionArray.arrayNames, speedconditionArray.arrayNums);
     let uniqueBlockTypes = [...new Set(blockorder)];
-    let targetCount = Math.ceil(speedcondition.length / 2 / uniqueBlockTypes.length);
+    let targetCount = Math.ceil(speedcondition.length / 2);
+    console.log(`${targetCount}`);
     let countMap = {};
     for (let blocktype of uniqueBlockTypes) {
         let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
@@ -932,6 +934,12 @@ const backmask = {
         post_trial_gap: 200
     };
 
+let enter_fullscreen = {
+        type: fullscreen,
+        fullscreen_mode: true,
+}
+
+
 const fixation = {
     type: htmlKeyboardResponse,
     stimulus: `<div>
@@ -1023,6 +1031,7 @@ const practice_phase = {
         repetitions: 20,
 };
 
+timeline.push(enter_fullscreen);
 timeline.push(instructions);
 timeline.push(preloader);
 timeline.push(instructions1);
