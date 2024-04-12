@@ -582,7 +582,7 @@ function youPressSomething(data) {
 }
 
 // !! SPEED/TIME Manipulations !!
-let speedconditionDef = ['400', '800'];
+let speedconditionDef = ['400', '2500'];
 let speedconditionArray = {
     arrayNames: speedconditionDef,
     arrayNums: [2, 2]
@@ -598,12 +598,12 @@ function setspeedCondition() {
         let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
         countMap[blocktype] = {};
         countMap[blocktype]['400'] = blockIndices.filter(index => speedcondition[index] === '400').length;
-        countMap[blocktype]['800'] = blockIndices.filter(index => speedcondition[index] === '800').length;
+        countMap[blocktype]['2500'] = blockIndices.filter(index => speedcondition[index] === '2500').length;
     }
 
     for (let blocktype of uniqueBlockTypes) {
         let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
-        for (let speed of ['400', '800']) {
+        for (let speed of ['400', '2500']) {
             let speedDifference = countMap[blocktype][speed] - targetCount;
             if (speedDifference < 0) {
                 for (let i = 0; i < Math.abs(speedDifference); i++) {
@@ -617,7 +617,7 @@ function setspeedCondition() {
                 for (let i = 0; i < Math.abs(speedDifference); i++) {
                     let indexToRemove = blockIndices.find(index => speedcondition[index] === speed);
                     if (indexToRemove !== undefined) {
-                        speedcondition[indexToRemove] = (speed === '400') ? '800' : '400';
+                        speedcondition[indexToRemove] = (speed === '400') ? '2500' : '400';
                         countMap[blocktype][speed]--;
                     }
                 }
