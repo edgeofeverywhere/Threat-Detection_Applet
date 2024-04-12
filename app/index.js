@@ -669,12 +669,22 @@ const instructions = {
         type: htmlKeyboardResponse,
         on_finish: function(data) {
         data.stimulus = 'instruction screen 0';} ,
-        stimulus: `
-        <p>Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
+        stimulus: `<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap');
+                .garamond-text {
+                    font-family: 'EB Garamond', serif;
+                }
+            </style>
+        </head>
+        <p class="garamond-text">Hello! This experiment will evaluate your ability to determine the type of objects in short periods of time.</p>
         <div id="centtrial-container" style="display: flex; justify-content: center; align-items: center; margin: 20vh 0;">
           <p style="font-size: 3em;">+</p>
         </div>
-        <p>First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
+        <p class="garamond-text">First, you will fixate your gaze in the center of the screen, using the point in the center of the screen, which is indicated by the above "fixation cross," as your reference. Press any key to continue.</p>
                 `,
 };
 
@@ -926,7 +936,7 @@ const takeabreak = {
         ticker = 0;
         },
     stimulus: function() {return `
-            <p>You have just completed block ${numofBreaks}</p>
+            <p>You have just completed block ${numofBreaks}!</p>
             <p>Take a short break, and when you feel ready, press any key to continue to the next block of trials
             </p>
             <div style='width: 100px;'>
