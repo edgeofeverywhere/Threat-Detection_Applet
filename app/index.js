@@ -27,7 +27,7 @@ let practicelocation = 0;
 let pressedornot = false;
 let alreadyAnswered = false;
 let experimental_trajectory = [];
-const expID = '';
+const expID = '0H7uXi1usSH4';
 
 //!! MASK DRAWING MATH !!
 // shuffler
@@ -45,6 +45,7 @@ function generatenewID(length) {
       const randomIndex = Math.floor(Math.random() * charset.length);
       newid += charset[randomIndex];
     }
+    console.log(`my based fake id: ${fakeid}`)
     return newid;
   }
 
@@ -114,7 +115,7 @@ const jsPsych = initJsPsych({
 });
 
 // "yo but i got a fake id doe" - "j-kwon in the 2000's rap song 'Tipsy'":
-fakeid = generatenewID(10);
+const fakeid = generatenewID(10);
 jsPsych.data.addProperties({subject_id: fakeid});
 
 // !! MAIN EXPERIMENT HELPERS !!
@@ -675,7 +676,7 @@ function getStimulusDuration() {
 function backmaskLength() {
 if (alreadyAnswered == true) {
     backmaskDuration = 150;
-} else {backmaskDuration = 2500;
+} else {backmaskDuration = 5000;
 }}
 
 // !! EXPERIMENT TIMELINE + EVENTS BELOW !!
@@ -824,7 +825,7 @@ const instructions5 = {
     </head>
     <p class="garamond-text">We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
     <p class="garamond-text">Try to respond as quickly as you can!</p>
-    <p class="garamond-text">Note that if you do not render a response within a two and a half second window after the grid disappears, the experiment will continue to progress regardless.</p>
+    <p class="garamond-text">Note that if you do not render a response within a five second window after the grid disappears, the experiment will continue to progress regardless.</p>
     <p class="garamond-text">The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
     <p class="garamond-text">Press any key to continue.</p>
     `},
@@ -844,6 +845,7 @@ setexperimentalTrajectory();
     <p class="garamond-text">We are now ready to begin the main experiment!</p>
     <p class="garamond-text">You will be given a break after completing a set of 40 trials in a row. </p>
     <p class="garamond-text">You will be given three breaks in total.</p>
+    <p class="garamond-text">Note that the grid may be presented more quickly than in the practice trials.</p>
     <p class="garamond-text">When you are ready to begin, press any key to continue!</p>
     `},
     on_finish: function(data) {data.stimulus = 'pre-experimental_briefing';} ,
@@ -1000,10 +1002,10 @@ const debrief_block = {
         <head>
         ${prettystyletingz}
         </head>
-        <p class="garamond-text">Congrats m9 - you responded correctly with ${accuracy}% of the trials.</p>
-                <p class="garamond-text>Your average response time ca ${rt}ms.</p>
-                <p class="garamond-text">Drop us the .csv you get!</p>
-                <p class="garamond-text">Press any key to complete the experiment.</p>`;
+        <p class="garamond-text">Congratulations, you have successfully completed the experiment! You responded correctly with ${accuracy}% of the trials.</p>
+                <p class="garamond-text>Your average response time was ${rt}ms.</p>
+                <p class="garamond-text">Our study tests the difference between a person’s reaction to ontogenetic threats (man-made objects such as a gun) and phylogenetic threats (found in nature, such as a spider).</p>
+                <p class="garamond-text">Thank you for your participation! You may close this window.</p>`;
         },
         css_classes: ['garamond-text', 'centtrial-container']
     };
@@ -1025,7 +1027,7 @@ const takeabreak = {
     ${prettystyletingz}
     </head>    
             <p class= "garamond-text">You have just completed block ${numofBreaks}!</p>
-            <p class="garamond-text">Take a short break, and when you feel ready, press any key to continue to the next block of trials</p>
+            <p class="garamond-text">Take a short break, and when you feel ready, press any key to continue to the next block of trials.</p>
             <div style='width: 100px;'>
             </div>
         `},
@@ -1050,7 +1052,7 @@ const save_data = {
     type: pipe,
     action: "save",
     experiment_id: expID,
-    filename: `data_${subject_id}.csv`,
+    filename: `data_${fakeid}.csv`,
     data_string: ()=>jsPsych.data.get().csv()
   };
 
