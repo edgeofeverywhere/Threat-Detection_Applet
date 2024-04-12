@@ -1,9 +1,6 @@
 const path = require('path');
-const getGrantToken = require('./app/encryptionconsts.js');
 
 module.exports = async () => {
-    const grantToken = await getGrantToken();
-
     return {
         mode: 'development',
         entry: path.join(__dirname, 'app', 'index'),
