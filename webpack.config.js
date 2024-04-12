@@ -1,50 +1,55 @@
 const path = require('path');
+const getGrantToken = require('./app/encryptionconsts.js');
 
-module.exports = {
-  mode: 'development',
-  entry: path.join(__dirname, 'app', 'index'),
-  watch: true,
-  output: {
-    path: path.join(__dirname, 'dist'),
-    publicPath: '/dist/',
-    filename: "bundle.js",
-    chunkFilename: '[name].js'
-  },
-  module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        include: [
-          path.resolve(__dirname, 'app')
-        ],
-        exclude: [
-          path.resolve(__dirname, 'node_modules')
-        ],
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            ["@babel/preset-env", {
-            "useBuiltIns": "entry",
-            "corejs": "3.22"
-          }]
-          ]
-          },
+module.exports = async () => {
+    const grantToken = await getGrantToken();
+
+    return {
+        mode: 'development',
+        entry: path.join(__dirname, 'app', 'index'),
+        watch: true,
+        output: {
+            path: path.join(__dirname, 'dist'),
+            publicPath: '/dist/',
+            filename: "bundle.js",
+            chunkFilename: '[name].js'
         },
-      {
-        test: /\.css$/, // Add this rule for CSS files
-        use: ['style-loader', 'css-loader'] // Use style-loader and css-loader
-      }
-    ]
-  },
-  resolve: {
-    extensions: ['.json', '.js', '.jsx']
-  },
-  devtool: 'inline-source-map',
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'), // Serve files from the dist directory
-    },
-    port: 8080,
-    hot: "only"
-  }
+        module: {
+            rules: [
+                {
+                    test: /\.jsx?$/,
+                    include: [
+                        path.resolve(__dirname, 'app')
+                    ],
+                    exclude: [
+                        path.resolve(__dirname, 'node_modules')
+                    ],
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            ["@babel/preset-env", {
+                                "useBuiltIns": "entry",
+                                "corejs": "3.22"
+                            }]
+                        ]
+                    },
+                },
+                {
+                    test: /\.css$/, // Add this rule for CSS files
+                    use: ['style-loader', 'css-loader'] // Use style-loader and css-loader
+                }
+            ]
+        },
+        resolve: {
+            extensions: ['.json', '.js', '.jsx']
+        },
+        devtool: 'inline-source-map',
+        devServer: {
+            static: {
+                directory: path.join(__dirname, 'dist'), // Serve files from the dist directory
+            },
+            port: 8080,
+            hot: "only"
+        }
+    };
 };
