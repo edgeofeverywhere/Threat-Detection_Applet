@@ -791,7 +791,7 @@ const instructions4 = {
     <head>
     ${prettystyletingz}
     </head>
-    <p class="garamond-text">If there are no discrepant objects in the array, much like in the example grid below, press the spacebar.</p>
+    <p class="garamond-text">If all the objects in the array are of the same type, like in the example grid below, press the spacebar.</p>
     <div id="centtrial-container">
     <img src = "img/Prototypes/KittenGrid_nodiscrepants2.png">
     </div>
