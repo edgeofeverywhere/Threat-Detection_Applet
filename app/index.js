@@ -759,7 +759,7 @@ const instructions2 = {
     <head>
     ${prettystyletingz}
     </head>
-    <p class="garamond-text">If the object that is different from the rest is "threatening" in character, like the exemplar "knife" below, press the 'q' button on the keyboard.</p>
+    <p class="garamond-text">If the object that is different from the rest is "threatening" in character, like the example "knife" below, press the 'q' button on the keyboard.</p>
     <div id="centtrial-container">
     <img src="img/Prototypes/knife2.png">
     </div>
@@ -775,7 +775,7 @@ const instructions3 = {
     <head>
     ${prettystyletingz}
     </head>
-    <p class="garamond-text">If the object that differs from the rest is "nonthreatening" in character, like the exemplar "kitten" below, press the 'p' button on the keyboard.</p>
+    <p class="garamond-text">If the object that differs from the rest is "nonthreatening" in character, like the example "kitten" below, press the 'p' button on the keyboard.</p>
     <div id="centtrial-container">
     <img src = "img/Prototypes/kitten2.png">
     </div>
@@ -809,6 +809,7 @@ const instructions5 = {
     ${prettystyletingz}
     </head>
     <p class="garamond-text">We will now commence a brief practice phase of 20 trials, where you will not be evaluated for performance.</p>
+    <p class="garamond-text">Try to respond as quickly as you can!</p>
     <p class="garamond-text">Note that if you do not render a response within a two and a half second window after the grid disappears, the experiment will continue to progress regardless.</p>
     <p class="garamond-text">The time of presentation for the grid will gradually decrease as the practice period progresses.</p>
     <p class="garamond-text">Press any key to continue.</p>
