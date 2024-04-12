@@ -5,6 +5,7 @@ import htmlKeyboardResponse from '@jspsych/plugin-html-keyboard-response';
 import 'ndarray';
 import 'ndarray-ops';
 import fullscreen from '@jspsych/plugin-fullscreen';
+import pipe from '@jspsych-contrib/plugin-pipe';
 import gaussian from 'gaussian'; 
 import PreloadPlugin from '@jspsych/plugin-preload';
 
@@ -26,6 +27,7 @@ let practicelocation = 0;
 let pressedornot = false;
 let alreadyAnswered = false;
 let experimental_trajectory = [];
+const expID = '';
 
 //!! MASK DRAWING MATH !!
 // shuffler
@@ -35,6 +37,16 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+
+function generatenewID(length) {
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let newid = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      newid += charset[randomIndex];
+    }
+    return newid;
+  }
 
 // generate the masks as arrays with a gaussian distribution
 function generateNoiseMasks(width, height) {
@@ -97,9 +109,13 @@ for (let i = 0; i < 26; i++) {
 // !! JSPSYCH INITIALIZE (we rely on inherited methods so we do it early.) !!
 const jsPsych = initJsPsych({
     on_finish: function() {
-        jsPsych.data.get().localSave('csv', 'results.csv');
+        console.log('it isnt me');
     }
 });
+
+// "yo but i got a fake id doe" - "j-kwon in the 2000's rap song 'Tipsy'":
+fakeid = generatenewID(10);
+jsPsych.data.addProperties({subject_id: fakeid});
 
 // !! MAIN EXPERIMENT HELPERS !!
 // main randomizer function (that randomizes per-trial stuff)
@@ -939,7 +955,6 @@ let enter_fullscreen = {
         fullscreen_mode: true,
 }
 
-
 const fixation = {
     type: htmlKeyboardResponse,
     stimulus: `<div>
@@ -1031,6 +1046,14 @@ const practice_phase = {
         repetitions: 20,
 };
 
+const save_data = {
+    type: pipe,
+    action: "save",
+    experiment_id: expID,
+    filename: `data_${subject_id}.csv`,
+    data_string: ()=>jsPsych.data.get().csv()
+  };
+
 timeline.push(enter_fullscreen);
 timeline.push(instructions);
 timeline.push(preloader);
@@ -1049,7 +1072,7 @@ timeline.push(takeabreak);
 timeline.push(test_procedure);
 timeline.push(takeabreak);
 timeline.push(test_procedure);
-
+// timeline.push(save_data);
 timeline.push(debrief_block);
 
 jsPsych.run(timeline);
