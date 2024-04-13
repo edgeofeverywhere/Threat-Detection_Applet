@@ -1,20 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>redir</title>
-  <script>
-    (function() {
-      var redirectUrl = window.location.href.replace(
-        window.location.origin + "/cogs219_202404_experiment_src", 
-        window.location.origin + "/cogs219_202404_experiment_src/dist"
-      );
-      window.location.replace(redirectUrl);
-    })();
-  </script>
-</head>
-<body>
-  <p>Redirecting...</p>
-</body>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>experiment</title>
+    <script src="https://unpkg.com/jspsych@7.0.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-image-keyboard-response@1.1.3"></script>
+  </head>
+  <body>
+      <script src="bundle.js"></script>
+  </body>
 </html>
