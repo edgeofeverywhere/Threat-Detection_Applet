@@ -45,7 +45,6 @@ function generatenewID(length) {
       const randomIndex = Math.floor(Math.random() * charset.length);
       newid += charset[randomIndex];
     }
-    console.log(`my based fake id: ${fakeid}`)
     return newid;
   }
 
@@ -110,13 +109,16 @@ for (let i = 0; i < 26; i++) {
 // !! JSPSYCH INITIALIZE (we rely on inherited methods so we do it early.) !!
 const jsPsych = initJsPsych({
     on_finish: function() {
-        console.log('it isnt me');
     }
 });
 
-// "yo but i got a fake id doe" - "j-kwon in the 2000's rap song 'Tipsy'":
+// "yo but i got a fake id doe" ~ j-kwon in the 2000's rap song 'Tipsy':
 const fakeid = generatenewID(10);
-jsPsych.data.addProperties({subject_id: fakeid});
+let prolificID = jsPsych.data.getURLVariable('PROLIFIC_PID');
+let studyID = jsPsych.data.getURLVariable('STUDY_ID');
+let sessionID = jsPsych.data.getURLVariable('SESSION_ID');
+
+jsPsych.data.addProperties({unique_identifier: fakeid, subject_id: prolificID, study_id: studyID, session_id: sessionID});
 
 // !! MAIN EXPERIMENT HELPERS !!
 // main randomizer function (that randomizes per-trial stuff)
@@ -600,29 +602,28 @@ function youPressSomething(data) {
 }
 
 // !! SPEED/TIME Manipulations !!
-let speedconditionDef = ['400', '2500'];
+let speedconditionDef = ['800', '2500'];
 let speedconditionArray = {
     arrayNames: speedconditionDef,
     arrayNums: [2, 2]
 }
 // names similar and functions to before
-// i did this in an overcomplicated way so I could extend it later sooo whatevs - this function generates a random order for speed conditions and ensures each participant gets at least one of each type.
+// i did this in an overcomplicated way so I could extend it later if need be - this function generates a random order for speed conditions and ensures each participant gets at least one of each type.
 function setspeedCondition() {
     let speedcondition = jsPsych.randomization.repeat(speedconditionArray.arrayNames, speedconditionArray.arrayNums);
     let uniqueBlockTypes = [...new Set(blockorder)];
     let targetCount = Math.ceil(speedcondition.length / 2);
-    console.log(`${targetCount}`);
     let countMap = {};
     for (let blocktype of uniqueBlockTypes) {
         let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
         countMap[blocktype] = {};
-        countMap[blocktype]['400'] = blockIndices.filter(index => speedcondition[index] === '400').length;
+        countMap[blocktype]['800'] = blockIndices.filter(index => speedcondition[index] === '800').length;
         countMap[blocktype]['2500'] = blockIndices.filter(index => speedcondition[index] === '2500').length;
     }
 
     for (let blocktype of uniqueBlockTypes) {
         let blockIndices = Array.from(blockorder.keys()).filter((index) => blockorder[index] === blocktype);
-        for (let speed of ['400', '2500']) {
+        for (let speed of ['800', '2500']) {
             let speedDifference = countMap[blocktype][speed] - targetCount;
             if (speedDifference < 0) {
                 for (let i = 0; i < Math.abs(speedDifference); i++) {
@@ -636,15 +637,16 @@ function setspeedCondition() {
                 for (let i = 0; i < Math.abs(speedDifference); i++) {
                     let indexToRemove = blockIndices.find(index => speedcondition[index] === speed);
                     if (indexToRemove !== undefined) {
-                        speedcondition[indexToRemove] = (speed === '400') ? '2500' : '400';
+                        speedcondition[indexToRemove] = (speed === '800') ? '2500' : '800';
                         countMap[blocktype][speed]--;
                     }
                 }
             }
         }
     }
-    console.log(`blocktrialarray: ${blockorder}`);
-    console.log(`Final speedcondition array: ${speedcondition}`);
+    // debug
+    // console.log(`blocktrialarray: ${blockorder}`);
+    // console.log(`Final speedcondition array: ${speedcondition}`);
     return speedcondition;
 }
 
@@ -874,8 +876,6 @@ const experimental_grid = {
         } else {
             data.task = currentTrialType;
             data.time_manipulation = stimulusDuration;
-            console.log(`currentSpeed is ${currentSpeed}`);
-            console.log(`stimulusDuration is ${stimulusDuration}`);
                 data.respondedwhen = 'ongrid';
             data.correctresponse = correctJudgement;
             data.targetimagelocation = target_location;
@@ -922,8 +922,6 @@ const backmask = {
         data.respondedwhen = 'onmask';
         data.time_manipulation = stimulusDuration;
         data.rt = data.rt + stimulusDuration;
-        console.log(`currentSpeed is ${currentSpeed}`);
-        console.log(`stimulusDuration is ${stimulusDuration}`);
         data.correctresponse = correctJudgement;
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
@@ -990,7 +988,7 @@ const feedback_block = {
 const debrief_block = {
     type: htmlKeyboardResponse,
     on_start: function () {
-            jsPsych.data.get().localSave('csv', `results.csv`);
+            // jsPsych.data.get().localSave('csv', `data__${fakeid}.csv`);
     },
     stimulus: function() {
         var trials = jsPsych.data.get().filter({roundtype: 'experimental'});
@@ -1002,10 +1000,10 @@ const debrief_block = {
         <head>
         ${prettystyletingz}
         </head>
-        <p class="garamond-text">Congratulations, you have successfully completed the experiment! You responded correctly with ${accuracy}% of the trials.</p>
-                <p class="garamond-text>Your average response time was ${rt}ms.</p>
-                <p class="garamond-text">Our study tests the difference between a person’s reaction to ontogenetic threats (man-made objects such as a gun) and phylogenetic threats (found in nature, such as a spider).</p>
-                <p class="garamond-text">Thank you for your participation! You may close this window.</p>`;
+        <p class="garamond-text">Congratulations, you have successfully completed the experiment! You responded correctly on ${accuracy}% of the trials.</p>
+                <p class="garamond-text>Your average response time, across all correct trials, was ${rt}ms.</p>
+                <p class="garamond-text">Our study is designed to evaluate the temporal factor in the difference between a person’s reactions to ontogenetic threats (man-made objects such as a gun) and phylogenetic threats (found in nature, such as a spider).</p>
+                <p class="garamond-text">Thank you for your participation! You may close this window, pressing any key to finish the experiment.</p>`;
         },
         css_classes: ['garamond-text', 'centtrial-container']
     };
@@ -1042,6 +1040,15 @@ const takeabreak = {
     css_classes: ['garamond-text', 'centtrial-container']
 };
 
+const teleporttomoney = {
+    type: htmlKeyboardResponse,
+    on_load: function() {
+        window.location = "https://app.prolific.co/submissions/complete?cc=C744ZSTR"
+        },
+    stimulus: function() {return ``},
+        on_finish: function(data) {data.stimulus = 'end';},
+};
+
 const practice_phase = {
         timeline: [fixation, experimental_grid, backmask, feedback_block],
         randomize_order: true,
@@ -1074,7 +1081,8 @@ timeline.push(takeabreak);
 timeline.push(test_procedure);
 timeline.push(takeabreak);
 timeline.push(test_procedure);
-// timeline.push(save_data);
+timeline.push(save_data);
 timeline.push(debrief_block);
+timeline.push(teleporttomoney);
 
 jsPsych.run(timeline);
