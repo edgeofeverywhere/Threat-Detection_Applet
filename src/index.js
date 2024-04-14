@@ -921,7 +921,7 @@ const backmask = {
 } else {data.task = currentTrialType;
         data.respondedwhen = 'onmask';
         data.time_manipulation = stimulusDuration;
-        data.rt = data.rt + stimulusDuration;
+        data.rt = +data.rt + +stimulusDuration;
         data.correctresponse = correctJudgement;
         data.targetimagelocation = target_location;
         data.blocktype = currentBlock;
@@ -988,7 +988,7 @@ const feedback_block = {
 const debrief_block = {
     type: htmlKeyboardResponse,
     on_start: function () {
-            // jsPsych.data.get().localSave('csv', `data__${fakeid}.csv`);
+    // jsPsych.data.get().localSave('csv', `data__${fakeid}.csv`);
     },
     stimulus: function() {
         var trials = jsPsych.data.get().filter({roundtype: 'experimental'});
