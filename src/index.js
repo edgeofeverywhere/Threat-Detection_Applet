@@ -1,3 +1,8 @@
+// before the jspsych bootstrapping loads
+const phase_to_prepend = document.getElementById("loggingphase");
+const currentloggingphase = phase_to_prepend.innerText;
+// console.log(`${currentloggingphase}`)
+
 import { initJsPsych } from 'jspsych';
 import 'jspsych/css/jspsych.css';
 import './styles/grid.css';
@@ -58,10 +63,10 @@ function generateNoiseMasks(width, height) {
         }
     }
     // distribution parameters
-    var distribution = gaussian(0, 30); // we will play around with this 
+    let distribution = gaussian(0, 30); // we will play around with this 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            var noise = Math.round(distribution.ppf(Math.random())); // generates the dist
+            let noise = Math.round(distribution.ppf(Math.random())); // generates the dist
             image[y][x] = Math.max(0, Math.min(255, image[y][x] + noise));
         }
     }
@@ -73,13 +78,13 @@ function randommaskUrl(image) {
   const width = image[0].length;
   const height = image.length;
   // makes a canvas element to display the mask
-  var canvas = document.createElement('canvas');
+  let canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
   const context = canvas.getContext('2d');
 
   // now draw the image
-  var imageData = context.createImageData(width, height);
+  let imageData = context.createImageData(width, height);
   for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
           const value = image[y][x];
@@ -1059,7 +1064,7 @@ const save_data = {
     type: pipe,
     action: "save",
     experiment_id: expID,
-    filename: `data_${fakeid}.csv`,
+    filename: `${currentloggingphase}_data_${fakeid}.csv`,
     data_string: ()=>jsPsych.data.get().csv()
   };
 
