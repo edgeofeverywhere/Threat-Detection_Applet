@@ -1008,7 +1008,7 @@ const debrief_block = {
         <p class="garamond-text">Congratulations, you have successfully completed the experiment! You responded correctly on ${accuracy}% of the trials.</p>
                 <p class="garamond-text>Your average response time, across all correct trials, was ${rt}ms.</p>
                 <p class="garamond-text">Our study is designed to evaluate the temporal factor in the difference between a person’s reactions to ontogenetic threats (man-made objects such as a gun) and phylogenetic threats (found in nature, such as a spider).</p>
-                <p class="garamond-text">Thank you for your participation! You may close this window, pressing any key to finish the experiment.</p>`;
+                <p class="garamond-text">Thank you for your participation! You may press any key to automatically return to Prolific.</p>`;
         },
         css_classes: ['garamond-text', 'centtrial-container']
     };
